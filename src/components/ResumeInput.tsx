@@ -2,12 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { friendlyMessage } from "@/lib/errors";
+import { readLayout, type ResumeLayout } from "@/lib/layout";
 import { openPdf, parseResume, resumeFileKind } from "@/lib/parseResume";
 import { useStoredState } from "@/lib/useStoredState";
 
 interface Props {
   text: string;
   onChange: (text: string) => void;
+  /** Called with the measured page layout of an uploaded file, or null if there is none. */
+  onLayout: (layout: ResumeLayout | null) => void;
 }
 
 /**
@@ -15,7 +18,7 @@ interface Props {
  * box. The text is still kept (the AI reads it), behind a "view or edit" toggle.
  * Everything is read in this browser; the file is never uploaded.
  */
-export function ResumeInput({ text, onChange }: Props) {
+export function ResumeInput({ text, onChange, onLayout }: Props) {
   const [stored, setStored] = useStoredState<{ fileName: string }>("job-helper:resume-file", {
     fileName: "",
   });
@@ -59,6 +62,7 @@ export function ResumeInput({ text, onChange }: Props) {
     setError("");
     try {
       const parsed = await parseResume(chosen);
+      onLayout(await readLayout(chosen));
       setFile(chosen);
       setStored({ fileName: chosen.name });
       setPasting(false);
@@ -76,6 +80,7 @@ export function ResumeInput({ text, onChange }: Props) {
     setStored({ fileName: "" });
     setShowText(false);
     setPasting(false);
+    onLayout(null);
     onChange("");
   }
 

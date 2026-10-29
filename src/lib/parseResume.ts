@@ -25,9 +25,9 @@ export async function openPdf(file: Blob) {
  * Turns an uploaded resume into plain text, entirely in the browser, so the
  * file is never uploaded anywhere.
  */
-export async function parseResume(file: File): Promise<string> {
+export async function parseResume(file: File, what = "resume"): Promise<string> {
   if (file.size > MAX_BYTES) {
-    throw new FriendlyError("That file is over 5 MB. Try exporting a smaller PDF.");
+    throw new FriendlyError(`That file is over 5 MB. Try a smaller ${what === "resume" ? "PDF" : "file"}.`);
   }
 
   const kind = resumeFileKind(file.name);
@@ -57,23 +57,28 @@ export async function parseResume(file: File): Promise<string> {
     .trim();
   if (!text) {
     throw new FriendlyError(
-      "No text could be read from that file. If it's a scanned image, paste your resume text instead.",
+      `No text could be read from that file. If it's a scanned image, paste your ${what} text instead.`,
     );
   }
   return text;
 }
 
 type Pdf = Awaited<ReturnType<typeof openPdf>>;
+export type PdfPage = Awaited<ReturnType<Pdf["getPage"]>>;
 
-interface Line {
+export interface Line {
   text: string;
   left: number;
   right: number;
   y: number;
   size: number;
+  /** The font of the line's first piece, as the PDF names it (e.g. "ABCDEF+Calibri-Bold"). */
+  font: string;
+  /** Where on the line (x) a wide gap starts a new chunk of text, which hints at columns. */
+  splits: number[];
 }
 
-const BULLET = /^[•·▪◦●■►▸➢✓*–—-]\s/;
+export const BULLET = /^[•·▪◦●■►▸➢✓*–—-]\s/;
 
 /**
  * Rebuilds the text of a PDF from where each piece sits on the page, so lines
@@ -83,31 +88,36 @@ const BULLET = /^[•·▪◦●■►▸➢✓*–—-]\s/;
 async function pdfText(pdf: Pdf): Promise<string> {
   const pages: string[] = [];
   for (let n = 1; n <= pdf.numPages; n++) {
-    const page = await pdf.getPage(n);
-    const content = await page.getTextContent();
-    const lines: Line[] = [];
-    for (const item of content.items) {
-      if (!("str" in item) || !item.str) continue;
-      const x = item.transform[4];
-      const y = item.transform[5];
-      const size = Math.hypot(item.transform[2], item.transform[3]) || item.height || 10;
-      const line = lines[lines.length - 1];
-      if (line && Math.abs(line.y - y) < size * 0.5) {
-        // Same line: add a space if the gap between the pieces looks like one.
-        const gap = x - line.right;
-        if (gap > size * 0.15 && !/\s$/.test(line.text) && !/^\s/.test(item.str)) {
-          line.text += " ";
-        }
-        line.text += item.str;
-        line.right = Math.max(line.right, x + item.width);
-        line.left = Math.min(line.left, x);
-      } else {
-        lines.push({ text: item.str, left: x, right: x + item.width, y, size });
-      }
-    }
-    pages.push(joinLines(lines.filter((line) => line.text.trim())));
+    pages.push(joinLines(await pageLines(await pdf.getPage(n))));
   }
   return pages.join("\n\n");
+}
+
+/** The lines of text on one PDF page, top to bottom, with where each sits. */
+export async function pageLines(page: PdfPage): Promise<Line[]> {
+  const content = await page.getTextContent();
+  const lines: Line[] = [];
+  for (const item of content.items) {
+    if (!("str" in item) || !item.str) continue;
+    const x = item.transform[4];
+    const y = item.transform[5];
+    const size = Math.hypot(item.transform[2], item.transform[3]) || item.height || 10;
+    const line = lines[lines.length - 1];
+    if (line && Math.abs(line.y - y) < size * 0.5) {
+      // Same line: add a space if the gap between the pieces looks like one.
+      const gap = x - line.right;
+      if (gap > size * 0.15 && !/\s$/.test(line.text) && !/^\s/.test(item.str)) {
+        line.text += " ";
+      }
+      if (gap > size * 2.5 && item.str.trim()) line.splits.push(x);
+      line.text += item.str;
+      line.right = Math.max(line.right, x + item.width);
+      line.left = Math.min(line.left, x);
+    } else {
+      lines.push({ text: item.str, left: x, right: x + item.width, y, size, font: item.fontName, splits: [] });
+    }
+  }
+  return lines.filter((line) => line.text.trim());
 }
 
 function joinLines(lines: Line[]): string {
