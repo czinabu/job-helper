@@ -5,7 +5,7 @@ export type ProviderId = "claude" | "lmstudio" | "ollama";
 
 export interface ModelSettings {
   provider: ProviderId;
-  /** Only used for Claude. Leave blank to use the server's ANTHROPIC_API_KEY. */
+  /** Only used for Claude: the visitor's own Anthropic API key. */
   apiKey: string;
   /** Only used for local models, e.g. http://localhost:1234/v1 */
   baseUrl: string;
