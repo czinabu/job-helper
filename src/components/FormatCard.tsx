@@ -61,12 +61,12 @@ export function FormatCard({
       <div className="flex items-baseline gap-3">
         <h2 className="text-lg font-medium">Formatting and spacing</h2>
         <span className="ml-auto text-3xl font-semibold">{report.score}</span>
-        <span className="text-sm text-muted">/ 100</span>
+        <span className="text-sm text-muted">/ 100{report.textOnly && " (text only)"}</span>
       </div>
       <p className="text-sm text-muted">
         Checked against advice from recruiters and resume experts.
         {report.textOnly &&
-          " You pasted text, so margins, fonts, and spacing couldn't be measured. Upload a PDF or Word file to check those too."}
+          " Margins, fonts, and spacing weren't checked, so this score only covers the text and may be higher than the full score. Upload your PDF or Word file to check those too."}
       </p>
 
       <ul className="space-y-2">
