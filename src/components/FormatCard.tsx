@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Loading } from "@/components/Loading";
 import { runTask } from "@/lib/ai";
 import { friendlyMessage } from "@/lib/errors";
 import { checkFormat, describeLayout, type CheckStatus } from "@/lib/formatCheck";
@@ -99,6 +100,7 @@ export function FormatCard({
             </span>
           </div>
         )}
+        {busy && <Loading message="Reviewing your resume..." hint="This usually takes under a minute." />}
         {error && <p role="alert" className="whitespace-pre-line text-sm text-bad">{error}</p>}
         {review && (
           <div className="space-y-3 text-sm">

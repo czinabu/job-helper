@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Loading } from "@/components/Loading";
 import { runTask } from "@/lib/ai";
 import { friendlyMessage } from "@/lib/errors";
 import type { ModelSettings } from "@/lib/providers";
@@ -59,6 +60,7 @@ export function SuggestionsCard({
       <button className="btn" disabled={busy} onClick={run}>
         {busy ? "Thinking..." : result ? "Refresh suggestions" : "Get suggestions"}
       </button>
+      {busy && <Loading message="Looking for the changes worth making..." hint="This usually takes under a minute." />}
       {error && <p role="alert" className="whitespace-pre-line text-sm text-bad">{error}</p>}
 
       {result && (
