@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --muted: #5c5c5c;
+  --line: #e2e2e2;
+  --card: #f7f7f8;
+  --accent: #2554d9;
+  --good: #1a7f37;
+  --bad: #b42318;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f0f10;
+    --foreground: #ededed;
+    --muted: #a0a0a0;
+    --line: #2c2c2e;
+    --card: #18181a;
+    --accent: #7d9cff;
+    --good: #4ac26b;
+    --bad: #ff7b72;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.field {
+  @apply w-full rounded-md border border-line bg-background px-3 py-2 text-sm outline-none focus:border-accent;
+}
+
+.btn {
+  @apply rounded-md bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:text-black;
+}
+
+.btn-secondary {
+  @apply rounded-md border border-line px-4 py-2 text-sm font-medium disabled:opacity-50;
+}
