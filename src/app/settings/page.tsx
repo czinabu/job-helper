@@ -103,6 +103,12 @@ export default function SettingsPage() {
               </a>
               .
             </p>
+            {settings.provider === "lmstudio" && (
+              <p className="mt-1 text-xs text-muted">
+                In LM Studio, open the Developer tab, click Server Settings, and switch on{" "}
+                <strong>Enable CORS</strong>. Without it, this site can&apos;t connect.
+              </p>
+            )}
           </div>
         ) : (
           <div>
