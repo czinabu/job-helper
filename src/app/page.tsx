@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { PROVIDERS, SETTINGS_KEY, defaultSettings, type ModelSettings } from "@/lib/providers";
+import { friendlyMessage } from "@/lib/errors";
+import { parseResume } from "@/lib/parseResume";
 import { useStoredState } from "@/lib/useStoredState";
 
 interface Background {
@@ -36,15 +38,10 @@ export default function Home() {
   async function upload(file: File) {
     setUploading(true);
     setUploadError("");
-    const form = new FormData();
-    form.append("file", file);
     try {
-      const res = await fetch("/api/parse-resume", { method: "POST", body: form });
-      const data = await res.json();
-      if (!res.ok) setUploadError(data.error);
-      else setInputs({ ...inputs, resume: data.text });
-    } catch {
-      setUploadError("Upload failed. Check that Job Helper is still running.");
+      setInputs({ ...inputs, resume: await parseResume(file) });
+    } catch (error) {
+      setUploadError(friendlyMessage(error));
     } finally {
       setUploading(false);
     }
