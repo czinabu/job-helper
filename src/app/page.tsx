@@ -20,6 +20,7 @@ import {
   type TailorResult,
 } from "@/lib/tailor";
 import { useStoredState } from "@/lib/useStoredState";
+import { addApplication, newApplication } from "@/lib/applications";
 
 type Inputs = TailorRequest;
 
@@ -43,6 +44,8 @@ export default function Home() {
   // Measured from the uploaded file, so it is gone after a reload (the text is kept).
   const [layout, setLayout] = useState<ResumeLayout | null>(null);
   const [tailored, setTailored] = useState<Tailored | null>(null);
+  const [logForm, setLogForm] = useState<{ company: string; role: string } | null>(null);
+  const [logged, setLogged] = useState(false);
 
   const setBackground = (patch: Partial<Background>) =>
     setInputs({ ...inputs, background: { ...inputs.background, ...patch } });
@@ -58,6 +61,8 @@ export default function Home() {
     setTailoring(true);
     setTailorError("");
     setTailored(null);
+    setLogForm(null);
+    setLogged(false);
     try {
       const result = await runTask<TailorResult>(settings, "tailor", inputs);
       setTailored({ result, resume: inputs.resume });
@@ -246,6 +251,51 @@ export default function Home() {
       {tailored && (
         <div id="results" className="border-t border-line pt-8">
           <TailorResults result={tailored.result} originalResume={tailored.resume} />
+          <div className="mt-8 rounded-lg border border-line bg-card p-4 text-sm">
+            {logged ? (
+              <p>
+                Saved. See it in your{" "}
+                <Link href="/applications" className="text-accent underline">
+                  application log
+                </Link>
+                .
+              </p>
+            ) : logForm ? (
+              <form
+                className="flex flex-wrap gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  try {
+                    addApplication(
+                      newApplication({
+                        company: logForm.company.trim(),
+                        role: logForm.role.trim(),
+                      }),
+                    );
+                    setLogged(true);
+                  } catch {
+                    setTailorError("Couldn't save to the log. Browser storage may be blocked.");
+                  }
+                }}
+              >
+                <input className="field w-auto flex-1" placeholder="Company" value={logForm.company} onChange={(e) => setLogForm({ ...logForm, company: e.target.value })} />
+                <input className="field w-auto flex-1" placeholder="Job title" value={logForm.role} onChange={(e) => setLogForm({ ...logForm, role: e.target.value })} />
+                <button className="btn" disabled={!logForm.company.trim() && !logForm.role.trim()}>
+                  Save
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span>Applying for this job?</span>
+                <button
+                  className="btn-secondary"
+                  onClick={() => setLogForm({ company: "", role: inputs.background.targetRole })}
+                >
+                  Save to log
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
