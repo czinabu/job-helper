@@ -61,7 +61,7 @@ Follow mainstream expert guidance:
 
 Match the requested tone and aim for the requested length. If the person gave extra instructions, follow them as long as they stay truthful. If earlier versions are given, write a clearly different take with a fresh opening.`;
 
-function aboutText(background: z.infer<typeof BackgroundSchema>): string {
+export function aboutText(background: z.infer<typeof BackgroundSchema>): string {
   const about = [
     background.targetRole && `Target role: ${background.targetRole}`,
     background.experience && `Years of experience: ${background.experience}`,
