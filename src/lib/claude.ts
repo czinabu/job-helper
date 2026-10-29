@@ -3,7 +3,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { FriendlyError } from "./errors";
-import type { ModelSettings, TaskWeight } from "./providers";
+import { BUDGET_MODEL, type ModelSettings, type TaskWeight } from "./providers";
 import type { Task } from "./tasks";
 
 // Claude is called straight from the visitor's browser with their own API
@@ -62,8 +62,12 @@ export async function listClaudeModels(settings: ModelSettings): Promise<string[
   }
 }
 
-/** Only heavy tasks use the main (Opus) model; light ones use the cheaper quick model. */
+/**
+ * Budget mode runs everything on Haiku. Otherwise only heavy tasks use the
+ * main (Opus) model; light ones use the cheaper quick model.
+ */
 function modelFor(settings: ModelSettings, weight: TaskWeight): string {
+  if (settings.budgetMode) return BUDGET_MODEL;
   if (weight === "light") return settings.quickModel.trim() || settings.model.trim();
   return settings.model.trim();
 }
