@@ -1,41 +1,19 @@
 "use client";
 
+import { listClaudeModels, runClaudeTask } from "./claude";
 import { FriendlyError } from "./errors";
 import { listLocalModels, runLocalTask } from "./local";
 import { PROVIDERS, type ModelSettings, type TestConnectionResult } from "./providers";
 import { TASKS, type TaskName } from "./tasks";
 
-// The one place the UI goes to talk to a model. Local models are called
-// straight from the browser; Claude goes through our server.
-
-async function postJson<T>(url: string, body: unknown): Promise<T> {
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    throw new FriendlyError("Couldn't reach Job Helper. Check your internet connection.");
-  }
-  const data = await res.json().catch(() => null);
-  if (!res.ok || !data) {
-    throw new FriendlyError(data?.error ?? "Job Helper's server had a problem. Try again.");
-  }
-  return data as T;
-}
+// The one place the UI goes to talk to a model. Both Claude and local models
+// are called straight from the browser; nothing goes through our server.
 
 export async function testConnection(settings: ModelSettings): Promise<TestConnectionResult> {
-  if (!PROVIDERS[settings.provider].isLocal) {
-    return postJson<TestConnectionResult>("/api/test-connection", settings).catch((error) => ({
-      ok: false,
-      message: error instanceof FriendlyError ? error.message : String(error),
-      models: [],
-    }));
-  }
   try {
-    const models = await listLocalModels(settings);
+    const models = PROVIDERS[settings.provider].isLocal
+      ? await listLocalModels(settings)
+      : await listClaudeModels(settings);
     return {
       ok: true,
       message: `Connected! Found ${models.length} model${models.length === 1 ? "" : "s"}.`,
@@ -63,10 +41,5 @@ export async function runTask<Output>(
   if (PROVIDERS[settings.provider].isLocal) {
     return runLocalTask(settings, task, checked.data);
   }
-  const { result } = await postJson<{ result: Output }>("/api/task", {
-    settings,
-    task: name,
-    input: checked.data,
-  });
-  return result;
+  return runClaudeTask(settings, task, checked.data);
 }

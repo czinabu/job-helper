@@ -8,7 +8,7 @@ import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
 import type { ResumeLayout } from "@/lib/layout";
 import { runTask } from "@/lib/ai";
-import { PROVIDERS, SETTINGS_KEY, defaultSettings, type ModelSettings } from "@/lib/providers";
+import { PROVIDERS } from "@/lib/providers";
 import { friendlyMessage } from "@/lib/errors";
 import {
   EDUCATION_STATUSES,
@@ -19,6 +19,7 @@ import {
   type TailorRequest,
   type TailorResult,
 } from "@/lib/tailor";
+import { useSettings } from "@/lib/useSettings";
 import { useStoredState } from "@/lib/useStoredState";
 import { addApplication, newApplication } from "@/lib/applications";
 
@@ -37,7 +38,7 @@ const EMPTY: Inputs = {
 };
 
 export default function Home() {
-  const [settings] = useStoredState<ModelSettings>(SETTINGS_KEY, defaultSettings());
+  const { settings } = useSettings();
   const [inputs, setInputs] = useStoredState<Inputs>("job-helper:inputs", EMPTY);
   const [tailoring, setTailoring] = useState(false);
   const [tailorError, setTailorError] = useState("");

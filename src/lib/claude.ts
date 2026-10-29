@@ -1,13 +1,14 @@
-import "server-only";
+"use client";
+
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { FriendlyError } from "./errors";
 import type { ModelSettings, TaskWeight } from "./providers";
 import type { Task } from "./tasks";
 
-// Claude calls go through the server using the visitor's own API key, which
-// is never stored. There is no shared server key. Local models never come
-// through here.
+// Claude is called straight from the visitor's browser with their own API
+// key, so the key and the resume never pass through our server. There is no
+// shared key. Local models never come through here.
 
 function claudeClient(settings: ModelSettings) {
   const apiKey = settings.apiKey.trim();
@@ -16,7 +17,7 @@ function claudeClient(settings: ModelSettings) {
       "No Claude API key found. Paste your key from console.anthropic.com into the API key box.",
     );
   }
-  return new Anthropic({ apiKey });
+  return new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 }
 
 function claudeError(error: unknown): FriendlyError {
@@ -45,7 +46,7 @@ function claudeError(error: unknown): FriendlyError {
     return new FriendlyError("Couldn't reach Claude's servers. Check your internet connection.");
   }
   if (error instanceof Anthropic.APIError) {
-    return new FriendlyError(`Claude returned an error (${error.status}): ${error.message}`);
+    return new FriendlyError(`Claude returned an error (${error.status}). Try again in a moment.`);
   }
   return new FriendlyError("Something went wrong talking to Claude. Try again in a moment.");
 }
