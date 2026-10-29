@@ -5,11 +5,12 @@ import { FriendlyError } from "./errors";
 import type { ModelSettings, TaskWeight } from "./providers";
 import type { Task } from "./tasks";
 
-// Claude runs on the server so API keys stay out of the browser when the
-// site owner provides one. Local models never come through here.
+// Claude calls go through the server using the visitor's own API key, which
+// is never stored. There is no shared server key. Local models never come
+// through here.
 
 function claudeClient(settings: ModelSettings) {
-  const apiKey = settings.apiKey.trim() || process.env.ANTHROPIC_API_KEY;
+  const apiKey = settings.apiKey.trim();
   if (!apiKey) {
     throw new FriendlyError(
       "No Claude API key found. Paste your key from console.anthropic.com into the API key box.",

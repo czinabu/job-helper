@@ -122,7 +122,7 @@ export default function SettingsPage() {
               <a className="text-accent underline" href="https://console.anthropic.com" target="_blank">
                 console.anthropic.com
               </a>
-              . Leave blank if whoever runs this site has already set one up.
+              . Everyone uses their own key, and usage is billed to your Anthropic account.
             </p>
           </div>
         )}

@@ -13,7 +13,7 @@ You can use it with:
 
 1. Open the Job Helper website in your browser. There's nothing to install.
 2. Click **Model settings** at the top right and pick where the AI runs:
-   - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (or leave it blank if the site already has one), then click **Test connection**.
+   - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (everyone uses their own key, billed to their own Anthropic account), then click **Test connection**.
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
 3. Go back to the home page and add your resume and the job posting.
 
@@ -39,8 +39,7 @@ Local models use the one model you pick for everything.
 
 1. Sign in to [vercel.com](https://vercel.com) with GitHub and click **Add New → Project**.
 2. Import this repository. Vercel detects Next.js, so keep the default settings.
-3. Optional: under **Environment Variables**, add `ANTHROPIC_API_KEY` if you want visitors to use Claude without their own key. You pay for their usage, so set a spending limit in the Anthropic Console.
-4. Click **Deploy**.
+3. Click **Deploy**. No environment variables are needed: visitors paste their own Claude API key in Model settings, so you never pay for their usage.
 
 ## For developers
 
@@ -53,7 +52,7 @@ npm run lint
 npm run build
 ```
 
-To use a shared Claude key locally, copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`.
+No environment variables are needed. Claude requests always use the API key entered in Model settings.
 
 How it fits together:
 
