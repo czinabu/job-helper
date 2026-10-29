@@ -73,14 +73,14 @@ Be ready to edit. Even the biggest model here is a step below Claude at careful,
 3. Pick the **Q4_K_M** version (or **MLX 4-bit** on a Mac), click **Download**, and wait for it to finish.
 4. When you load the model, LM Studio shows a **Context Length** setting. Set it to at least **8192**, so a resume and a job posting fit at once.
 
-### 3. Turn on the server and allow websites to use it
+### 3. Turn on the server and switch on Enable CORS
 
-This is the step people most often miss. Job Helper talks to LM Studio through its built-in server.
+> **Don't skip Enable CORS.** It's off by default, and without it Job Helper can't connect even though LM Studio is running. This is the step people most often miss.
 
 1. Click the **Developer** tab on the left side.
 2. At the top, flip the **Status** switch so it says **Running**.
-3. Open the server **Settings** (next to the Status switch) and turn on **Enable CORS**. This lets the Job Helper website talk to LM Studio.
-4. You should see a line like `Reachable at: http://localhost:1234`.
+3. Click **Server Settings** (next to the Status switch) and switch on **Enable CORS**. This lets the Job Helper website talk to LM Studio.
+4. You should see a line like `Reachable at: http://localhost:1234`. If it shows a different address (for example `http://169.254...` because **Serve on Local Network** is on), that's fine: keep using `http://localhost:1234/v1` in Job Helper.
 
 Keep LM Studio open while you use Job Helper.
 
@@ -148,6 +148,12 @@ This setting is cleared when your Mac restarts, so run the command again after a
 ---
 
 ## Troubleshooting
+
+**"LM Studio is running, but it isn't letting this website in"**
+Enable CORS is off. In LM Studio, open the **Developer** tab, click **Server Settings**, and switch on **Enable CORS**. Then click Test connection again. (In LM Studio's server log this looks like `Unexpected endpoint or method. (OPTIONS /v1/models)`.)
+
+**"Ollama is running, but it isn't letting this website in"**
+`OLLAMA_ORIGINS` isn't set to the Job Helper address, or Ollama wasn't restarted after you set it. See Option B, step 3.
 
 **"Couldn't reach LM Studio" or "Couldn't reach Ollama"**
 Work through the checklist in the message. The usual causes are:

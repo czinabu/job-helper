@@ -17,7 +17,7 @@ function unreachableHelp(settings: ModelSettings): string {
     settings.provider === "lmstudio"
       ? [
           "LM Studio is open, and its Developer tab says the server is Running.",
-          'In the Developer tab\'s server settings, "Enable CORS" is switched on.',
+          'In the Developer tab\'s Server Settings, "Enable CORS" is switched on.',
         ]
       : [
           "Ollama is running (opening the Ollama app is enough).",
@@ -32,6 +32,29 @@ function unreachableHelp(settings: ModelSettings): string {
   return `Check that:\n${steps.map((s) => `• ${s}`).join("\n")}`;
 }
 
+/** Shown when the server answered but the browser hid the answer, which means CORS is off. */
+function blockedHelp(settings: ModelSettings): string {
+  if (settings.provider === "lmstudio") {
+    return 'LM Studio is running, but it isn\'t letting this website in. In LM Studio, open the Developer tab, click Server Settings, and switch on "Enable CORS". Then click Test connection again.';
+  }
+  const origin = typeof window === "undefined" ? "this site's address" : window.location.origin;
+  return `Ollama is running, but it isn't letting this website in. Set OLLAMA_ORIGINS to ${origin}, quit Ollama, and open it again. The setup guide shows how.`;
+}
+
+/**
+ * A no-cors request can't read the reply, but it succeeds whenever the server
+ * answers at all. So if it succeeds after a normal request failed, the server
+ * is up and CORS is what's blocking us.
+ */
+async function serverAnswers(url: string): Promise<boolean> {
+  try {
+    await fetch(url, { mode: "no-cors" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function localFetch(settings: ModelSettings, path: string, init?: RequestInit) {
   const baseUrl = settings.baseUrl.trim().replace(/\/+$/, "");
   if (!/^https?:\/\//.test(baseUrl)) {
@@ -40,13 +63,17 @@ async function localFetch(settings: ModelSettings, path: string, init?: RequestI
     );
   }
 
+  const url = `${baseUrl}${path}`;
   let res: Response;
   try {
-    res = await fetch(`${baseUrl}${path}`, {
+    // Only send Content-Type with a body. On a plain GET it would make the
+    // browser send an extra preflight request for no reason.
+    res = await fetch(url, {
       ...init,
-      headers: { "Content-Type": "application/json", ...init?.headers },
+      headers: init?.body ? { "Content-Type": "application/json", ...init.headers } : init?.headers,
     });
   } catch {
+    if (await serverAnswers(url)) throw new FriendlyError(blockedHelp(settings));
     throw new FriendlyError(
       `Couldn't reach ${label(settings)} at ${baseUrl}. ${unreachableHelp(settings)}`,
     );
