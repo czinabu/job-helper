@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DownloadPanel } from "@/components/DownloadPanel";
+import { Loading } from "@/components/Loading";
 import { runTask } from "@/lib/ai";
 import {
   LENGTHS,
@@ -116,6 +117,8 @@ export function CoverLetterCard({
         </button>
         {!ready && <span className="text-xs text-muted">Add your resume and a job posting first.</span>}
       </div>
+
+      {busy && <Loading message="Writing your cover letter..." hint="This usually takes under a minute." />}
 
       {error && <p role="alert" className="whitespace-pre-line text-sm text-bad">{error}</p>}
 

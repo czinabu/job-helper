@@ -1,5 +1,6 @@
 "use client";
 
+import { Loading } from "@/components/Loading";
 import Link from "next/link";
 import { useState } from "react";
 import { runTask } from "@/lib/ai";
@@ -99,6 +100,8 @@ export default function JobsPage() {
           {busy ? "Looking..." : "Recommend jobs"}
         </button>
       </div>
+
+      {busy && <Loading message="Finding jobs that fit you..." hint="This usually takes under a minute." />}
 
       {error && (
         <p role="alert" className="whitespace-pre-line rounded-md border border-bad p-3 text-sm text-bad">
