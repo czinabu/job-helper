@@ -9,6 +9,7 @@ import {
   type ProviderId,
   type TestConnectionResult,
 } from "@/lib/providers";
+import { testConnection } from "@/lib/ai";
 import { useStoredState } from "@/lib/useStoredState";
 
 export default function SettingsPage() {
@@ -22,23 +23,22 @@ export default function SettingsPage() {
     setResult(null);
   }
 
-  async function testConnection() {
+  async function handleTest() {
     setTesting(true);
     setResult(null);
     try {
-      const res = await fetch("/api/test-connection", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
-      });
-      const data = (await res.json()) as TestConnectionResult;
+      const data = await testConnection(settings);
       setResult(data);
-      // Pick a model automatically if none is chosen yet.
-      if (data.ok && !data.models.includes(settings.model)) {
-        setSettings({ ...settings, model: data.models[0] });
+      // Pick models automatically if the chosen ones aren't available.
+      if (data.ok) {
+        const pick = (current: string) =>
+          data.models.includes(current) ? current : data.models[0];
+        setSettings({
+          ...settings,
+          model: pick(settings.model),
+          quickModel: info.isLocal ? "" : pick(settings.quickModel),
+        });
       }
-    } catch {
-      setResult({ ok: false, message: "Couldn't reach the Job Helper server.", models: [] });
     } finally {
       setTesting(false);
     }
@@ -127,36 +127,32 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="model">
-            Model
-          </label>
-          {result?.ok ? (
-            <select
-              id="model"
-              className="field"
-              value={settings.model}
-              onChange={(e) => setSettings({ ...settings, model: e.target.value })}
-            >
-              {result.models.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <input
-              id="model"
-              className="field"
-              value={settings.model}
-              onChange={(e) => setSettings({ ...settings, model: e.target.value })}
-              placeholder="Click Test connection to see your models"
-            />
-          )}
-        </div>
+        <ModelPicker
+          id="model"
+          label={info.isLocal ? "Model" : "Model for big jobs"}
+          hint={
+            info.isLocal
+              ? undefined
+              : "Used for demanding work like rewriting your whole resume. Opus is the most capable."
+          }
+          value={settings.model}
+          options={result?.ok ? result.models : null}
+          onChange={(model) => setSettings({ ...settings, model })}
+        />
+
+        {!info.isLocal && (
+          <ModelPicker
+            id="quickModel"
+            label="Model for quick jobs"
+            hint="Used for lighter work like short suggestions. A smaller model like Sonnet or Haiku is faster and cheaper."
+            value={settings.quickModel}
+            options={result?.ok ? result.models : null}
+            onChange={(quickModel) => setSettings({ ...settings, quickModel })}
+          />
+        )}
 
         <div className="flex items-center gap-3">
-          <button className="btn" onClick={testConnection} disabled={testing}>
+          <button className="btn" onClick={handleTest} disabled={testing}>
             {testing ? "Testing..." : "Test connection"}
           </button>
         </div>
@@ -164,7 +160,7 @@ export default function SettingsPage() {
         {result && (
           <p
             role="status"
-            className={`rounded-md border p-3 text-sm ${
+            className={`whitespace-pre-line rounded-md border p-3 text-sm ${
               result.ok ? "border-good text-good" : "border-bad text-bad"
             }`}
           >
@@ -172,6 +168,49 @@ export default function SettingsPage() {
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+function ModelPicker({
+  id,
+  label,
+  hint,
+  value,
+  options,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  hint?: string;
+  value: string;
+  /** Models found by Test connection, or null before testing. */
+  options: string[] | null;
+  onChange: (model: string) => void;
+}) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium" htmlFor={id}>
+        {label}
+      </label>
+      {options ? (
+        <select id={id} className="field" value={value} onChange={(e) => onChange(e.target.value)}>
+          {options.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          id={id}
+          className="field"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Click Test connection to see your models"
+        />
+      )}
+      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
     </div>
   );
 }

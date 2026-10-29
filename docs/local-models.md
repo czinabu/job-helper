@@ -4,7 +4,7 @@ A local model runs on your own computer instead of on the internet. It's free, a
 
 **Pick one of the two options below.** If you're not sure, choose **LM Studio**: it's a normal app with buttons, so there's no typing commands.
 
-> Local models only work when Job Helper is running on the same computer (see [Run it on your computer](../README.md#run-it-on-your-computer)).
+> **Use Chrome, Edge, or Firefox.** The Job Helper website talks to the model on your computer directly from your browser. Safari may block this. The first time you click Test connection, your browser may ask whether the site can **access devices on your local network**. Click **Allow**: that's how it reaches LM Studio or Ollama.
 
 ## Which model should I download?
 
@@ -36,13 +36,14 @@ Any similar chat model works (for example Gemma 3 or Llama 3). Bigger models giv
 2. Search for the model from the table above, for example `qwen3 8b`.
 3. Click **Download** and wait for it to finish.
 
-### 3. Turn on the server
+### 3. Turn on the server and allow websites to use it
 
 This is the step people most often miss. Job Helper talks to LM Studio through its built-in server.
 
 1. Click the **Developer** tab on the left side.
 2. At the top, flip the **Status** switch so it says **Running**.
-3. You should see a line like `Reachable at: http://localhost:1234`.
+3. Open the server **Settings** (next to the Status switch) and turn on **Enable CORS**. This lets the Job Helper website talk to LM Studio.
+4. You should see a line like `Reachable at: http://localhost:1234`.
 
 Keep LM Studio open while you use Job Helper.
 
@@ -80,7 +81,30 @@ After that Ollama runs quietly in the background (look for the llama icon in you
 
 3. Wait for the download to reach 100%. You can close the terminal afterwards.
 
-### 3. Connect Job Helper
+### 3. Allow the Job Helper website to use Ollama
+
+Ollama only answers websites you've approved, so you need to tell it the Job Helper site's address. The address is the start of what's in your browser's address bar when you're on Job Helper, for example `https://job-helper.vercel.app` (no slash at the end). If you skip this, Test connection shows the exact address to use.
+
+**On Windows:**
+
+1. Click Start, type `environment variables`, and open **Edit environment variables for your account**.
+2. Under the top list, click **New...**
+3. For **Variable name**, type `OLLAMA_ORIGINS`. For **Variable value**, paste the Job Helper address. Click **OK**, then **OK** again.
+4. Quit Ollama (right-click the llama icon near the clock, then **Quit**) and open it again.
+
+**On Mac:**
+
+1. Open Terminal and run this, with your Job Helper address in the quotes:
+
+   ```
+   launchctl setenv OLLAMA_ORIGINS "https://job-helper.vercel.app"
+   ```
+
+2. Quit Ollama (click the llama icon in the menu bar, then **Quit**) and open it again.
+
+This setting is cleared when your Mac restarts, so run the command again after a restart.
+
+### 4. Connect Job Helper
 
 1. In Job Helper, click **Model settings**.
 2. Choose **Ollama (local, free)**. Leave the server address as `http://localhost:11434/v1`.
@@ -91,7 +115,11 @@ After that Ollama runs quietly in the background (look for the llama icon in you
 ## Troubleshooting
 
 **"Couldn't reach LM Studio" or "Couldn't reach Ollama"**
-The app isn't running, or (for LM Studio) the server is off. Open the app, and in LM Studio check that the Developer tab says **Running**.
+Work through the checklist in the message. The usual causes are:
+- The app isn't open, or (for LM Studio) the server is off. Check that the Developer tab says **Running**.
+- LM Studio's **Enable CORS** setting is off, or Ollama's `OLLAMA_ORIGINS` isn't set to the Job Helper address (or Ollama wasn't restarted after setting it).
+- Your browser asked about local network access and it was blocked. In Chrome or Edge, click the icon at the left of the address bar, find **Local network access**, and set it to **Allow**.
+- You're on Safari. Try Chrome, Edge, or Firefox.
 
 **"No models are downloaded yet"**
 Go back to step 2 for your option and download a model.
