@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { TaskWeight } from "./providers";
+import { coverLetterTask } from "./coverLetter";
 import { formatTask } from "./formatReview";
 import { tailorTask } from "./tailor";
 
@@ -30,6 +31,7 @@ export function defineTask<Input, Output>(task: Task<Input, Output>) {
 export const TASKS: Record<string, Task<any, any>> = {
   tailor: tailorTask,
   format: formatTask,
+  coverLetter: coverLetterTask,
 };
 
 export type TaskName = keyof typeof TASKS;
