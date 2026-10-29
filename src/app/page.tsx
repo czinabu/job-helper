@@ -5,9 +5,10 @@ import { useState } from "react";
 import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
 import { runTask } from "@/lib/ai";
-import { PROVIDERS, SETTINGS_KEY, defaultSettings, type ModelSettings } from "@/lib/providers";
+import { PROVIDERS } from "@/lib/providers";
 import { friendlyMessage } from "@/lib/errors";
 import type { Background, TailorRequest, TailorResult } from "@/lib/tailor";
+import { useSettings } from "@/lib/useSettings";
 import { useStoredState } from "@/lib/useStoredState";
 
 type Inputs = TailorRequest;
@@ -25,7 +26,7 @@ const EMPTY: Inputs = {
 };
 
 export default function Home() {
-  const [settings] = useStoredState<ModelSettings>(SETTINGS_KEY, defaultSettings());
+  const { settings } = useSettings();
   const [inputs, setInputs] = useStoredState<Inputs>("job-helper:inputs", EMPTY);
   const [tailoring, setTailoring] = useState(false);
   const [tailorError, setTailorError] = useState("");

@@ -4,17 +4,16 @@ import { useState } from "react";
 import {
   PROVIDERS,
   defaultSettings,
-  SETTINGS_KEY,
-  type ModelSettings,
   type ProviderId,
   type TestConnectionResult,
 } from "@/lib/providers";
 import { testConnection } from "@/lib/ai";
 import { COMPUTER_TYPES } from "@/lib/localModels";
 import { useStoredState } from "@/lib/useStoredState";
+import { useSettings } from "@/lib/useSettings";
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useStoredState<ModelSettings>(SETTINGS_KEY, defaultSettings());
+  const { settings, setSettings, remember, setRemember, clearKey } = useSettings();
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<TestConnectionResult | null>(null);
   const info = PROVIDERS[settings.provider];
@@ -50,7 +49,7 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-2xl font-semibold">Model settings</h1>
         <p className="mt-1 text-sm text-muted">
-          Choose which AI model reads your resume. Your settings are saved only in this browser.
+          Choose which AI model reads your resume. Your settings are saved only in this browser. Nothing you enter here is sent to Job Helper&apos;s server.
         </p>
       </div>
 
@@ -131,6 +130,35 @@ export default function SettingsPage() {
               </a>
               . Everyone uses their own key, and usage is billed to your Anthropic account.
             </p>
+            <label className="mt-3 flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
+              <span>
+                Remember my key on this device
+                <span className="block text-xs text-muted">
+                  Off by default: your key is forgotten when you close this tab. Don&apos;t turn
+                  this on for a shared or public computer.
+                </span>
+              </span>
+            </label>
+            {settings.apiKey && (
+              <button type="button" className="btn mt-3" onClick={clearKey}>
+                Clear my key
+              </button>
+            )}
+            <div className="mt-3 rounded-lg border border-line bg-card p-3 text-xs text-muted">
+              <p className="font-medium text-foreground">Your key and your privacy</p>
+              <p className="mt-1">
+                Your key and resume go straight from your browser to Anthropic. They never pass
+                through Job Helper&apos;s server, and we don&apos;t log or keep them. The key stays
+                in this browser only. Use a key with a spending limit, and delete it at
+                console.anthropic.com if you ever think it&apos;s been exposed.
+              </p>
+            </div>
           </div>
         )}
 

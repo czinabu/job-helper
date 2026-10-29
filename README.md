@@ -24,7 +24,7 @@ If something isn't set up right, Test connection tells you what to fix in plain 
 - Your resume, background, and settings are saved only in your own browser.
 - Resume files are read inside your browser. They're never uploaded.
 - With LM Studio or Ollama, your browser talks straight to the model on your computer. Your resume is never sent over the internet.
-- With Claude, your resume goes through the Job Helper server to Anthropic's API to generate results. Nothing is stored.
+- With Claude, your browser sends your resume and API key straight to Anthropic's API. They never pass through the Job Helper server, which stores and logs nothing. The key is kept for the current tab only unless you tick "Remember my key on this device", and "Clear my key" removes it. A Content-Security-Policy (in `next.config.ts`) limits where the page can send data.
 
 ## How Claude models are used
 
@@ -64,6 +64,6 @@ How it fits together:
 - `src/lib/tasks.ts`: every AI request is a *task* with a prompt, input and output schemas, and a weight (`heavy` or `light`). Features register their task in `TASKS`.
 - `src/lib/ai.ts`: what the UI calls. Runs a task on the picked model.
 - `src/lib/local.ts`: runs tasks on LM Studio or Ollama **from the browser**, so the hosted site can use a visitor's local model.
-- `src/lib/claude.ts` and `src/app/api/task`: run tasks on Claude **on the server**. Heavy tasks use the main model, light ones the quick model.
+- `src/lib/claude.ts`: runs tasks on Claude **from the browser** (there are no server API routes). `src/lib/apiKey.ts` and `src/lib/useSettings.ts` keep the key out of the saved settings. Heavy tasks use the main model, light ones the quick model.
 - `src/lib/tailor.ts`: the `tailor` task (heavy, so it runs on the main model) and the keyword check. `src/components/TailorResults.tsx` shows the results.
 - `src/lib/parseResume.ts`: reads PDF and Word files in the browser.
