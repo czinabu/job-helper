@@ -20,9 +20,14 @@ export default function RootLayout({
             <Link href="/" className="text-lg font-semibold">
               Job Helper
             </Link>
-            <Link href="/settings" className="text-sm text-muted hover:text-foreground">
-              Model settings
-            </Link>
+            <div className="flex gap-5 text-sm text-muted">
+              <Link href="/applications" className="hover:text-foreground">
+                Application log
+              </Link>
+              <Link href="/settings" className="hover:text-foreground">
+                Model settings
+              </Link>
+            </div>
           </nav>
         </header>
         <main className="mx-auto max-w-3xl px-4 py-8">{children}</main>
