@@ -10,6 +10,7 @@ import {
   type TestConnectionResult,
 } from "@/lib/providers";
 import { testConnection } from "@/lib/ai";
+import { COMPUTER_TYPES } from "@/lib/localModels";
 import { useStoredState } from "@/lib/useStoredState";
 
 export default function SettingsPage() {
@@ -127,6 +128,8 @@ export default function SettingsPage() {
           </div>
         )}
 
+        {info.isLocal && <ModelAdvisor provider={settings.provider} />}
+
         <ModelPicker
           id="model"
           label={info.isLocal ? "Model" : "Model for big jobs"}
@@ -168,6 +171,56 @@ export default function SettingsPage() {
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+function ModelAdvisor({ provider }: { provider: ProviderId }) {
+  const [computer, setComputer] = useStoredState("job-helper:computer", { id: "" });
+  const pick = COMPUTER_TYPES.find((c) => c.id === computer.id);
+
+  return (
+    <div className="rounded-lg border border-line bg-card p-4">
+      <label className="mb-1 block text-sm font-medium" htmlFor="computer">
+        Which model fits my computer?
+      </label>
+      <select
+        id="computer"
+        className="field"
+        value={computer.id}
+        onChange={(e) => setComputer({ id: e.target.value })}
+      >
+        <option value="">Choose your computer...</option>
+        {COMPUTER_TYPES.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.label}
+          </option>
+        ))}
+      </select>
+      {pick ? (
+        <div className="mt-3 space-y-1 text-sm">
+          <p>
+            Download <span className="font-medium">{pick.model}</span> ({pick.downloadSize}).{" "}
+            {provider === "ollama" ? (
+              <>
+                In a terminal, run <code className="rounded bg-background px-1">ollama pull {pick.ollamaTag}</code>
+              </>
+            ) : (
+              <>
+                In LM Studio&apos;s Discover tab, search{" "}
+                <code className="rounded bg-background px-1">{pick.lmStudioSearch}</code> and pick the Q4_K_M
+                version (or MLX 4-bit on a Mac). When you load it, set Context Length to at least 8192.
+              </>
+            )}
+          </p>
+          <p className="text-muted">Rewriting a resume takes {pick.rewriteTime}.</p>
+          <p className="text-muted">{pick.quality}</p>
+        </div>
+      ) : (
+        <p className="mt-1 text-xs text-muted">
+          Not sure what you have? The setup guide shows how to check your memory and graphics card.
+        </p>
+      )}
     </div>
   );
 }
