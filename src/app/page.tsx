@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
 import { runTask } from "@/lib/ai";
 import { PROVIDERS, SETTINGS_KEY, defaultSettings, type ModelSettings } from "@/lib/providers";
 import { friendlyMessage } from "@/lib/errors";
-import { parseResume } from "@/lib/parseResume";
 import type { Background, TailorRequest, TailorResult } from "@/lib/tailor";
 import { useStoredState } from "@/lib/useStoredState";
 
@@ -27,26 +27,12 @@ const EMPTY: Inputs = {
 export default function Home() {
   const [settings] = useStoredState<ModelSettings>(SETTINGS_KEY, defaultSettings());
   const [inputs, setInputs] = useStoredState<Inputs>("job-helper:inputs", EMPTY);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState("");
   const [tailoring, setTailoring] = useState(false);
   const [tailorError, setTailorError] = useState("");
   const [tailored, setTailored] = useState<Tailored | null>(null);
 
   const setBackground = (patch: Partial<Background>) =>
     setInputs({ ...inputs, background: { ...inputs.background, ...patch } });
-
-  async function upload(file: File) {
-    setUploading(true);
-    setUploadError("");
-    try {
-      setInputs({ ...inputs, resume: await parseResume(file) });
-    } catch (error) {
-      setUploadError(friendlyMessage(error));
-    } finally {
-      setUploading(false);
-    }
-  }
 
   async function tailor() {
     setTailoring(true);
@@ -84,27 +70,7 @@ export default function Home() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-medium">1. Your resume</h2>
-        <label className="btn-secondary inline-block cursor-pointer">
-          {uploading ? "Reading file..." : "Upload PDF or Word file"}
-          <input
-            type="file"
-            accept=".pdf,.docx,.txt,.md"
-            className="hidden"
-            disabled={uploading}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) upload(file);
-              e.target.value = "";
-            }}
-          />
-        </label>
-        {uploadError && <p className="text-sm text-bad">{uploadError}</p>}
-        <textarea
-          className="field h-64 font-mono"
-          value={inputs.resume}
-          onChange={(e) => setInputs({ ...inputs, resume: e.target.value })}
-          placeholder="Or paste your resume text here. After uploading, check the text below and fix anything that came through wrong."
-        />
+        <ResumeInput text={inputs.resume} onChange={(resume) => setInputs({ ...inputs, resume })} />
       </section>
 
       <section className="space-y-3">
