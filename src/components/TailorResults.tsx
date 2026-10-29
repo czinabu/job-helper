@@ -98,6 +98,8 @@ export function TailorResults({
         </section>
       )}
 
+      {result.educationAdvice && <EducationAdvice advice={result.educationAdvice} />}
+
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Your tailored resume</h2>
@@ -128,6 +130,42 @@ export function TailorResults({
         </section>
       )}
     </div>
+  );
+}
+
+function EducationAdvice({ advice }: { advice: TailorResult["educationAdvice"] }) {
+  return (
+    <section className="space-y-3">
+      <h2 className="text-lg font-medium">Education for this job</h2>
+      <div className="space-y-3 rounded-lg border border-line bg-card p-5 text-sm">
+        <p>
+          <span className="rounded-full border border-accent px-3 py-1 text-xs text-accent">
+            {advice.recommendation}
+          </span>
+        </p>
+        <p>{advice.reasoning}</p>
+        {advice.placement && (
+          <p>
+            <span className="font-medium">Where it goes: </span>
+            {advice.placement}
+          </p>
+        )}
+        {advice.howToList.trim() && (
+          <div>
+            <p className="font-medium">How to list it</p>
+            <pre className="field mt-1 whitespace-pre-wrap break-words p-3 font-sans">
+              {advice.howToList}
+            </pre>
+          </div>
+        )}
+        {advice.coursework && (
+          <p>
+            <span className="font-medium">Relevant coursework: </span>
+            {advice.coursework}
+          </p>
+        )}
+      </div>
+    </section>
   );
 }
 

@@ -7,7 +7,15 @@ import { TailorResults } from "@/components/TailorResults";
 import { runTask } from "@/lib/ai";
 import { PROVIDERS, SETTINGS_KEY, defaultSettings, type ModelSettings } from "@/lib/providers";
 import { friendlyMessage } from "@/lib/errors";
-import type { Background, TailorRequest, TailorResult } from "@/lib/tailor";
+import {
+  EDUCATION_STATUSES,
+  EMPTY_EDUCATION,
+  type Background,
+  type Education,
+  type EducationStatus,
+  type TailorRequest,
+  type TailorResult,
+} from "@/lib/tailor";
 import { useStoredState } from "@/lib/useStoredState";
 
 type Inputs = TailorRequest;
@@ -20,7 +28,7 @@ interface Tailored {
 
 const EMPTY: Inputs = {
   resume: "",
-  background: { targetRole: "", experience: "", skills: "", notes: "" },
+  background: { targetRole: "", experience: "", skills: "", notes: "", education: [] },
   jobPosting: "",
 };
 
@@ -33,6 +41,13 @@ export default function Home() {
 
   const setBackground = (patch: Partial<Background>) =>
     setInputs({ ...inputs, background: { ...inputs.background, ...patch } });
+
+  // Always show at least one blank school so the fields are easy to find.
+  const schools = inputs.background.education?.length
+    ? inputs.background.education
+    : [EMPTY_EDUCATION];
+  const setSchool = (index: number, patch: Partial<Education>) =>
+    setBackground({ education: schools.map((s, i) => (i === index ? { ...s, ...patch } : s)) });
 
   async function tailor() {
     setTailoring(true);
@@ -104,6 +119,71 @@ export default function Home() {
           value={inputs.background.notes}
           onChange={(e) => setBackground({ notes: e.target.value })}
         />
+
+        <div className="space-y-3 pt-2">
+          <h3 className="text-sm font-medium">Education</h3>
+          <p className="text-sm text-muted">
+            Include school you didn&apos;t finish too. Job Helper will suggest whether to list it,
+            where it goes, and how to word it for each job.
+          </p>
+          {schools.map((school, i) => (
+            <div key={i} className="space-y-3 rounded-md border border-line p-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <input
+                  className="field"
+                  placeholder="School, e.g. Ohio State University"
+                  value={school.school}
+                  onChange={(e) => setSchool(i, { school: e.target.value })}
+                />
+                <input
+                  className="field"
+                  placeholder="Degree or program, e.g. B.S. Computer Science"
+                  value={school.program}
+                  onChange={(e) => setSchool(i, { program: e.target.value })}
+                />
+                <select
+                  className="field"
+                  aria-label="Status"
+                  value={school.status}
+                  onChange={(e) => setSchool(i, { status: e.target.value as EducationStatus | "" })}
+                >
+                  <option value="">Status...</option>
+                  {Object.entries(EDUCATION_STATUSES).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  className="field"
+                  placeholder="Dates, e.g. 2021–2023 or expected May 2027"
+                  value={school.dates}
+                  onChange={(e) => setSchool(i, { dates: e.target.value })}
+                />
+              </div>
+              <textarea
+                className="field h-20"
+                placeholder="Relevant coursework, credits earned, honors, or projects"
+                value={school.coursework}
+                onChange={(e) => setSchool(i, { coursework: e.target.value })}
+              />
+              {schools.length > 1 && (
+                <button
+                  className="text-sm text-muted underline"
+                  onClick={() => setBackground({ education: schools.filter((_, j) => j !== i) })}
+                >
+                  Remove this school
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            className="btn-secondary"
+            onClick={() => setBackground({ education: [...schools, EMPTY_EDUCATION] })}
+          >
+            Add another school
+          </button>
+        </div>
       </section>
 
       <section className="space-y-3">
