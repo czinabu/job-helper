@@ -75,8 +75,8 @@ export async function listLocalModels(settings: ModelSettings): Promise<string[]
   if (ids.length === 0) {
     throw new FriendlyError(
       settings.provider === "lmstudio"
-        ? "LM Studio is running, but no models are downloaded yet. Use the Discover tab in LM Studio to download one (see the setup guide for a recommendation)."
-        : "Ollama is running, but no models are downloaded yet. Open a terminal and run `ollama pull qwen3:8b` (see the setup guide for other options).",
+        ? "LM Studio is running, but no models are downloaded yet. Use the Discover tab in LM Studio to download one (Model settings suggests one for your computer)."
+        : "Ollama is running, but no models are downloaded yet. Open a terminal and run `ollama pull gemma4:12b`, or see Model settings for the right model for your computer.",
     );
   }
   return ids;

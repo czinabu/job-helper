@@ -8,17 +8,53 @@ A local model runs on your own computer instead of on the internet. It's free, a
 
 ## Which model should I download?
 
-It depends on how much memory (RAM) your computer has.
+*Last checked: October 2026. New models come out often, so these picks will age.*
 
-- **Find your RAM:** on Windows, open Settings → System → About and look at "Installed RAM". On a Mac, click the Apple menu → About This Mac and look at "Memory".
+The right model depends on two things: **how much memory your computer has**, and **whether it has a graphics card that helps** (an Apple Silicon Mac or an NVIDIA graphics card). If it has neither, the model runs on the main processor (CPU), which works but is slower.
 
-| Your RAM | Recommended model | Download size |
-| --- | --- | --- |
-| 8 GB | Qwen3 4B | about 2.5 GB |
-| 16 GB | Qwen3 8B | about 5 GB |
-| 32 GB or more | Qwen3 14B | about 9 GB |
+**Find your memory and chip:**
 
-Any similar chat model works (for example Gemma 3 or Llama 3). Bigger models give better results but run slower.
+- **Mac:** click the Apple menu → **About This Mac**. "Chip" says M1, M2, M3, M4, or M5 for Apple Silicon (an "Intel" Mac counts as a PC without a graphics card). "Memory" is your RAM.
+- **Windows:** open Settings → System → About and look at **Installed RAM**. To check for an NVIDIA card, press `Ctrl + Shift + Esc`, open the **Performance** tab, and click **GPU**. If it says NVIDIA, the number next to "Dedicated GPU memory" is what matters.
+
+Then find your computer in this table:
+
+| Your computer | Model | Ollama command | Download | Time to rewrite a resume |
+| --- | --- | --- | --- | --- |
+| Any computer with 8 GB | Qwen3.5 4B | `ollama pull qwen3.5:4b` | about 3.5 GB | 1 to 2 min on a Mac, 2 to 5 min on other laptops |
+| Mac with 16 to 24 GB | Gemma 4 12B | `ollama pull gemma4:12b` | about 8 GB | about 1 min |
+| Mac with 32 GB | Gemma 4 26B | `ollama pull gemma4:26b` | about 18 GB | under 1 min |
+| Mac with 48 GB or more | Gemma 4 31B | `ollama pull gemma4:31b` | about 20 GB | 1 to 2 min |
+| PC with 16 GB, no NVIDIA card | Gemma 4 E4B | `ollama pull gemma4:e4b` | about 7 GB | 2 to 4 min |
+| PC with 32 GB or more, no NVIDIA card | Gemma 4 26B | `ollama pull gemma4:26b` | about 18 GB | 2 to 4 min |
+| NVIDIA card with 8 GB | Qwen3.5 9B | `ollama pull qwen3.5:9b` | about 7 GB | under 1 min |
+| NVIDIA card with 12 to 16 GB | Gemma 4 12B | `ollama pull gemma4:12b` | about 8 GB | under 1 min |
+| NVIDIA card with 24 GB or more | Gemma 4 31B | `ollama pull gemma4:31b` | about 20 GB | under 1 min |
+
+Job Helper's **Model settings** page has the same picker: choose **LM Studio** or **Ollama** and look for "Which model fits my computer?".
+
+Times are rough guesses for a one-page resume, and the first run is slower while the model loads. Older or thinner laptops will be at the slow end.
+
+### Why these models
+
+- **Gemma 4** (from Google) is the most reliable family right now at giving answers in the exact format Job Helper needs, and it writes clear English. Most picks are Gemma 4.
+- **Qwen3.5** (from Alibaba) has small sizes that squeeze into less memory, so it's the pick for 8 GB computers and 8 GB graphics cards.
+- **Gemma 4 26B** is a "mixture of experts" model: it's large, but only a small part of it works on each word, so it's fast even without a graphics card. That makes it the best pick for big-memory PCs without an NVIDIA card.
+- **Why not bigger?** A model needs its download size in free memory, plus a few GB to spare. On a Mac, only about two thirds of the memory can be used for the model, which is why a 24 GB Mac stays on the 12B model. If your computer slows to a crawl, step down one row.
+
+### Which version (quantization) to pick
+
+Models come in versions that are squeezed to different sizes. You don't need to choose with Ollama: the commands above download a 4-bit version, which is the best balance of size and quality.
+
+In LM Studio, search for the model name (for example `gemma 4 12b`) and pick the **Q4_K_M** version. On a Mac, LM Studio may also offer an **MLX 4-bit** version: pick that, as it runs faster on Apple Silicon. LM Studio shows a green "Full GPU offload possible" label when a version fits your computer well.
+
+### Have an AMD or Intel graphics card?
+
+LM Studio supports these too. Use the NVIDIA row that matches your card's memory. Results vary more than with NVIDIA, so if it's slow, use the "no NVIDIA card" row instead.
+
+### How good is a local model compared with Claude?
+
+Be ready to edit. Even the biggest model here is a step below Claude at careful, polished rewriting, and the small ones are noticeably weaker: plainer wording, missed details, and sometimes an answer in the wrong format (just try again). Local models can also **make things up**, like a skill or a number that isn't on your resume, so read every line before you send it to an employer. For an important application, it can be worth switching to Claude in Model settings for the final version.
 
 ---
 
@@ -33,8 +69,9 @@ Any similar chat model works (for example Gemma 3 or Llama 3). Bigger models giv
 ### 2. Download a model
 
 1. Click the **Discover** tab (the magnifying glass on the left side).
-2. Search for the model from the table above, for example `qwen3 8b`.
-3. Click **Download** and wait for it to finish.
+2. Search for the model from the table above, for example `gemma 4 12b`.
+3. Pick the **Q4_K_M** version (or **MLX 4-bit** on a Mac), click **Download**, and wait for it to finish.
+4. When you load the model, LM Studio shows a **Context Length** setting. Set it to at least **8192**, so a resume and a job posting fit at once.
 
 ### 3. Turn on the server and allow websites to use it
 
@@ -71,13 +108,11 @@ After that Ollama runs quietly in the background (look for the llama icon in you
 1. Open a terminal:
    - **Windows:** press the Windows key, type `cmd`, and press Enter.
    - **Mac:** open the Terminal app (search for it with Spotlight, `Cmd + Space`).
-2. Type the command for your model from the table above and press Enter:
+2. Type the Ollama command for your computer from the table above and press Enter. For example:
 
-   | Model | Command |
-   | --- | --- |
-   | Qwen3 4B | `ollama pull qwen3:4b` |
-   | Qwen3 8B | `ollama pull qwen3:8b` |
-   | Qwen3 14B | `ollama pull qwen3:14b` |
+   ```
+   ollama pull gemma4:12b
+   ```
 
 3. Wait for the download to reach 100%. You can close the terminal afterwards.
 
@@ -128,7 +163,10 @@ Go back to step 2 for your option and download a model.
 The server address is slightly off. Use exactly `http://localhost:1234/v1` for LM Studio or `http://localhost:11434/v1` for Ollama.
 
 **Results are very slow**
-Try a smaller model from the table. Closing other big apps (like games or many browser tabs) also helps.
+Try the model one row up in the table (a smaller one). Closing other big apps (like games or many browser tabs) also helps. If your computer freezes or the fan roars while it works, the model is too big for your memory.
+
+**"The local model's answer wasn't in the format Job Helper expected"**
+Try again once. If it keeps happening, the model may be running out of room: in LM Studio, raise **Context Length** to 8192 or more when loading the model. In the Ollama app, open Settings and raise the context length if your version has that option. A bigger model also helps.
 
 **Results are low quality**
 Try a bigger model if your computer has the memory for it, or switch to Claude in Model settings.
