@@ -25,9 +25,9 @@ export async function openPdf(file: Blob) {
  * Turns an uploaded resume into plain text, entirely in the browser, so the
  * file is never uploaded anywhere.
  */
-export async function parseResume(file: File): Promise<string> {
+export async function parseResume(file: File, what = "resume"): Promise<string> {
   if (file.size > MAX_BYTES) {
-    throw new FriendlyError("That file is over 5 MB. Try exporting a smaller PDF.");
+    throw new FriendlyError(`That file is over 5 MB. Try a smaller ${what === "resume" ? "PDF" : "file"}.`);
   }
 
   const kind = resumeFileKind(file.name);
@@ -57,7 +57,7 @@ export async function parseResume(file: File): Promise<string> {
     .trim();
   if (!text) {
     throw new FriendlyError(
-      "No text could be read from that file. If it's a scanned image, paste your resume text instead.",
+      `No text could be read from that file. If it's a scanned image, paste your ${what} text instead.`,
     );
   }
   return text;
