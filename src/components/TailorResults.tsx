@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DownloadPanel } from "@/components/DownloadPanel";
 import { hasKeyword, type TailorResult } from "@/lib/tailor";
 
 function scoreLabel(score: number) {
@@ -17,6 +18,9 @@ export function TailorResults({
   originalResume: string;
 }) {
   const [copied, setCopied] = useState(false);
+  // Editable copy of the model's resume; resets when a new result arrives.
+  const [edited, setEdited] = useState({ source: result.tailoredResume, text: result.tailoredResume });
+  const resumeText = edited.source === result.tailoredResume ? edited.text : result.tailoredResume;
   const score = Math.max(0, Math.min(100, Math.round(result.matchScore)));
   // Checked here rather than trusting the model, so the counts are exact.
   const keywords = [...new Set(result.keywords.map((k) => k.trim()).filter(Boolean))].map(
@@ -29,7 +33,7 @@ export function TailorResults({
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(result.tailoredResume);
+      await navigator.clipboard.writeText(resumeText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -109,11 +113,16 @@ export function TailorResults({
         </div>
         <p className="text-sm text-muted">
           Read it over before using it. The AI is told not to invent anything, but you know your
-          history best.
+          history best. You can edit it here before you download it. Use &quot;## &quot; for a
+          section heading and &quot;- &quot; for a bullet.
         </p>
-        <pre className="field whitespace-pre-wrap break-words p-4 font-sans leading-relaxed">
-          {result.tailoredResume}
-        </pre>
+        <textarea
+          className="field h-96 font-sans leading-relaxed"
+          aria-label="Tailored resume"
+          value={resumeText}
+          onChange={(e) => setEdited({ source: result.tailoredResume, text: e.target.value })}
+        />
+        <DownloadPanel text={resumeText} kind="resume" />
       </section>
 
       {result.changes.length > 0 && (
