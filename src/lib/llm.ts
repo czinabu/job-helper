@@ -1,6 +1,8 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
-import { PROVIDERS, type ModelSettings, type ProviderId } from "./providers";
+import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import { z } from "zod";
+import { PROVIDERS, type ModelSettings, type ProviderId, type TaskWeight } from "./providers";
 
 /**
  * An error whose message is safe and helpful to show directly to a
@@ -118,39 +120,67 @@ export async function listModels(settings: ModelSettings): Promise<string[]> {
   return ids;
 }
 
+/** Pulls the JSON object out of a local model's reply, which may wrap it in prose. */
+function extractJson(text: string): unknown {
+  // Some local reasoning models include their thinking inline.
+  const cleaned = text.replace(/<think>[\s\S]*?<\/think>/g, "");
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start === -1 || end <= start) return null;
+  try {
+    return JSON.parse(cleaned.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Sends one system prompt and one user message, and returns the reply text.
- * This is the single entry point the resume features use, so they work the
- * same way with Claude and with local models.
+ * Picks the model for a task. With Claude, only heavy tasks use the main
+ * (Opus) model; light ones use the cheaper quick model. Local providers have
+ * one model for everything.
  */
-export async function complete(
+function modelFor(settings: ModelSettings, weight: TaskWeight): string {
+  if (settings.provider === "claude" && weight === "light") {
+    return settings.quickModel.trim() || settings.model.trim();
+  }
+  return settings.model.trim();
+}
+
+/**
+ * Sends one system prompt and one user message, and returns the reply parsed
+ * against `schema`. This is the single entry point the resume features use,
+ * so they work the same way with Claude and with local models.
+ */
+export async function complete<T>(
   settings: ModelSettings,
+  weight: TaskWeight,
   system: string,
   user: string,
-): Promise<string> {
-  if (!settings.model.trim()) {
-    throw new FriendlyError("Pick a model in Settings first.");
+  schema: z.ZodType<T>,
+): Promise<T> {
+  const model = modelFor(settings, weight);
+  if (!model) {
+    throw new FriendlyError("Pick a model in Model settings first.");
   }
 
   if (settings.provider === "claude") {
     try {
       const client = claudeClient(settings);
-      const message = await client.messages
-        .stream({
-          model: settings.model,
-          max_tokens: 64000,
-          thinking: { type: "adaptive" },
-          output_config: { effort: "medium" },
-          system,
-          messages: [{ role: "user", content: user }],
-        })
-        .finalMessage();
+      const message = await client.messages.parse({
+        model,
+        max_tokens: 16000,
+        thinking: { type: "adaptive" },
+        output_config: { effort: "medium", format: zodOutputFormat(schema) },
+        system,
+        messages: [{ role: "user", content: user }],
+      });
       if (message.stop_reason === "refusal") {
         throw new FriendlyError("Claude declined this request. Try rewording it.");
       }
-      return message.content
-        .flatMap((block) => (block.type === "text" ? [block.text] : []))
-        .join("");
+      if (message.stop_reason === "max_tokens" || !message.parsed_output) {
+        throw new FriendlyError("Claude's answer was cut off. Try a shorter resume or job posting.");
+      }
+      return message.parsed_output;
     } catch (error) {
       throw claudeError(error);
     }
@@ -159,14 +189,26 @@ export async function complete(
   const data = (await localFetch(settings, "/chat/completions", {
     method: "POST",
     body: JSON.stringify({
-      model: settings.model,
+      model,
       messages: [
-        { role: "system", content: system },
+        {
+          role: "system",
+          content: `${system}\n\nReply with only a JSON object matching this schema:\n${JSON.stringify(z.toJSONSchema(schema))}`,
+        },
         { role: "user", content: user },
       ],
+      // Both LM Studio and Ollama use this to constrain the reply to the schema.
+      response_format: {
+        type: "json_schema",
+        json_schema: { name: "result", strict: true, schema: z.toJSONSchema(schema) },
+      },
     }),
   })) as { choices?: { message?: { content?: string } }[] };
-  const text = data.choices?.[0]?.message?.content ?? "";
-  // Some local reasoning models include their thinking inline.
-  return text.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+  const parsed = schema.safeParse(extractJson(data.choices?.[0]?.message?.content ?? ""));
+  if (!parsed.success) {
+    throw new FriendlyError(
+      "The local model's answer wasn't in the format Job Helper expected. Try again, or try a bigger model.",
+    );
+  }
+  return parsed.data;
 }
