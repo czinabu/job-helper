@@ -11,7 +11,7 @@ You can use it with:
 
 ## Using Job Helper
 
-1. Open the Job Helper website in your browser. There's nothing to install.
+1. Open the hosted Job Helper website in your browser. There's nothing to install or deploy, and you don't need a Vercel account.
 2. Click **Model settings** at the top right and pick where the AI runs:
    - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (everyone uses their own key, billed to their own Anthropic account), then click **Test connection**.
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
@@ -35,11 +35,16 @@ Claude has two model settings so the expensive model is only used when it's wort
 
 Local models use the one model you pick for everything.
 
-## Host your own copy on Vercel
+## For maintainers: hosting the site on Vercel
+
+Job Helper runs as one public site on Vercel, deployed from this repository. Regular users just open that site. These steps are for whoever runs it (or anyone who wants a private copy).
 
 1. Sign in to [vercel.com](https://vercel.com) with GitHub and click **Add New → Project**.
 2. Import this repository. Vercel detects Next.js, so keep the default settings.
-3. Click **Deploy**. No environment variables are needed: visitors paste their own Claude API key in Model settings, so you never pay for their usage.
+3. Click **Deploy**. No environment variables are needed: visitors paste their own Claude API key in Model settings, so the site owner never pays for their usage.
+4. Optional: under **Settings → Domains**, add a custom domain.
+
+After that, every merge to `main` redeploys the site automatically, and each pull request gets its own preview link.
 
 ## For developers
 
