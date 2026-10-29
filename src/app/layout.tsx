@@ -21,6 +21,9 @@ export default function RootLayout({
               Job Helper
             </Link>
             <div className="flex gap-5 text-sm text-muted">
+              <Link href="/jobs" className="hover:text-foreground">
+                Find jobs
+              </Link>
               <Link href="/applications" className="hover:text-foreground">
                 Application log
               </Link>
