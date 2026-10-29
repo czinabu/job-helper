@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
 import { JobPostingInput } from "@/components/JobPostingInput";
 import { ResumeInput } from "@/components/ResumeInput";
@@ -246,6 +247,17 @@ export default function Home() {
       {inputs.resume.trim() && (
         <div className="border-t border-line pt-8">
           <FormatCard resume={inputs.resume} layout={layout} settings={settings} />
+        </div>
+      )}
+
+      {ready && (
+        <div className="border-t border-line pt-8">
+          <CoverLetterCard
+            resume={inputs.resume}
+            background={inputs.background}
+            jobPosting={inputs.jobPosting}
+            settings={settings}
+          />
         </div>
       )}
 
