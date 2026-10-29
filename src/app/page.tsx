@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
 import { JobPostingInput } from "@/components/JobPostingInput";
+import { SuggestionsCard } from "@/components/SuggestionsCard";
 import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
 import type { ResumeLayout } from "@/lib/layout";
@@ -253,6 +254,17 @@ export default function Home() {
       {ready && (
         <div className="border-t border-line pt-8">
           <CoverLetterCard
+            resume={inputs.resume}
+            background={inputs.background}
+            jobPosting={inputs.jobPosting}
+            settings={settings}
+          />
+        </div>
+      )}
+
+      {ready && (
+        <div className="border-t border-line pt-8">
+          <SuggestionsCard
             resume={inputs.resume}
             background={inputs.background}
             jobPosting={inputs.jobPosting}

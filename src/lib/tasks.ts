@@ -3,6 +3,7 @@ import type { TaskWeight } from "./providers";
 import { coverLetterTask } from "./coverLetter";
 import { formatTask } from "./formatReview";
 import { recommendTask } from "./recommend";
+import { suggestionsTask } from "./suggestions";
 import { tailorTask } from "./tailor";
 
 /**
@@ -34,6 +35,7 @@ export const TASKS: Record<string, Task<any, any>> = {
   format: formatTask,
   recommend: recommendTask,
   coverLetter: coverLetterTask,
+  suggestions: suggestionsTask,
 };
 
 export type TaskName = keyof typeof TASKS;
