@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { TaskWeight } from "./providers";
+import { tailorTask } from "./tailor";
 
 /**
  * One kind of AI request the app makes, like "tailor a resume". Tasks are
@@ -25,6 +26,8 @@ export function defineTask<Input, Output>(task: Task<Input, Output>) {
  * Every task the app can run, by name. Features add their task here.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const TASKS: Record<string, Task<any, any>> = {};
+export const TASKS: Record<string, Task<any, any>> = {
+  tailor: tailorTask,
+};
 
 export type TaskName = keyof typeof TASKS;

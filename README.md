@@ -7,7 +7,7 @@ You can use it with:
 - **Claude** (Anthropic's AI): best results, nothing to install.
 - **A free local model** through **LM Studio** or **Ollama**: runs on your own computer, so your resume never leaves it.
 
-> **Status:** early. Right now you can add your resume (PDF, Word, or text), your background, and a job posting, and connect a model. Resume tailoring and suggestions are next.
+> **Status:** early. You can add your resume (PDF, Word, or text), your background, and a job posting, then get a tailored resume with a match summary. Suggestions are next.
 
 ## Using Job Helper
 
@@ -15,7 +15,7 @@ You can use it with:
 2. Click **Model settings** at the top right and pick where the AI runs:
    - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (or leave it blank if the site already has one), then click **Test connection**.
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
-3. Go back to the home page and add your resume and the job posting.
+3. Go back to the home page, add your resume and the job posting, and click **Tailor my resume**. You get a rewritten resume, a match score, the skills you have and are missing, which of the posting's keywords each version contains, and a list of what changed and why.
 
 If something isn't set up right, Test connection tells you what to fix in plain English.
 
@@ -61,4 +61,5 @@ How it fits together:
 - `src/lib/ai.ts`: what the UI calls. Runs a task on the picked model.
 - `src/lib/local.ts`: runs tasks on LM Studio or Ollama **from the browser**, so the hosted site can use a visitor's local model.
 - `src/lib/claude.ts` and `src/app/api/task`: run tasks on Claude **on the server**. Heavy tasks use the main model, light ones the quick model.
+- `src/lib/tailor.ts`: the `tailor` task (heavy, so it runs on the main model) and the keyword check. `src/components/TailorResults.tsx` shows the results.
 - `src/lib/parseResume.ts`: reads PDF and Word files in the browser.

@@ -2,22 +2,20 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { TailorResults } from "@/components/TailorResults";
+import { runTask } from "@/lib/ai";
 import { PROVIDERS, SETTINGS_KEY, defaultSettings, type ModelSettings } from "@/lib/providers";
 import { friendlyMessage } from "@/lib/errors";
 import { parseResume } from "@/lib/parseResume";
+import type { Background, TailorRequest, TailorResult } from "@/lib/tailor";
 import { useStoredState } from "@/lib/useStoredState";
 
-interface Background {
-  targetRole: string;
-  experience: string;
-  skills: string;
-  notes: string;
-}
+type Inputs = TailorRequest;
 
-interface Inputs {
+interface Tailored {
+  result: TailorResult;
+  /** The resume this result was made from, for the keyword check. */
   resume: string;
-  background: Background;
-  jobPosting: string;
 }
 
 const EMPTY: Inputs = {
@@ -31,6 +29,9 @@ export default function Home() {
   const [inputs, setInputs] = useStoredState<Inputs>("job-helper:inputs", EMPTY);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [tailoring, setTailoring] = useState(false);
+  const [tailorError, setTailorError] = useState("");
+  const [tailored, setTailored] = useState<Tailored | null>(null);
 
   const setBackground = (patch: Partial<Background>) =>
     setInputs({ ...inputs, background: { ...inputs.background, ...patch } });
@@ -44,6 +45,21 @@ export default function Home() {
       setUploadError(friendlyMessage(error));
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function tailor() {
+    setTailoring(true);
+    setTailorError("");
+    setTailored(null);
+    try {
+      const result = await runTask<TailorResult>(settings, "tailor", inputs);
+      setTailored({ result, resume: inputs.resume });
+      setTimeout(() => document.getElementById("results")?.scrollIntoView({ behavior: "smooth" }));
+    } catch (error) {
+      setTailorError(friendlyMessage(error));
+    } finally {
+      setTailoring(false);
     }
   }
 
@@ -135,18 +151,44 @@ export default function Home() {
       </section>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-line pt-6">
-        <button className="btn" disabled title="Coming in the next update">
-          Tailor my resume
+        <button className="btn" disabled={!ready || tailoring} onClick={tailor}>
+          {tailoring ? "Tailoring..." : "Tailor my resume"}
         </button>
         <span className="text-sm text-muted">
-          {ready
-            ? "All set. Resume tailoring is coming in the next update."
-            : "Add your resume and a job posting to continue."}
+          {tailoring
+            ? PROVIDERS[settings.provider].isLocal
+              ? "This can take a few minutes on a local model."
+              : "This usually takes under a minute."
+            : ready
+              ? ""
+              : "Add your resume and a job posting to continue."}
         </span>
-        <button className="ml-auto text-sm text-muted underline" onClick={() => setInputs(EMPTY)}>
+        <button
+          className="ml-auto text-sm text-muted underline"
+          onClick={() => {
+            setInputs(EMPTY);
+            setTailored(null);
+            setTailorError("");
+          }}
+        >
           Clear everything
         </button>
       </div>
+
+      {tailorError && (
+        <p
+          role="alert"
+          className="whitespace-pre-line rounded-md border border-bad p-3 text-sm text-bad"
+        >
+          {tailorError}
+        </p>
+      )}
+
+      {tailored && (
+        <div id="results" className="border-t border-line pt-8">
+          <TailorResults result={tailored.result} originalResume={tailored.resume} />
+        </div>
+      )}
     </div>
   );
 }
