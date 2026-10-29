@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type { TaskWeight } from "./providers";
 import { coverLetterTask } from "./coverLetter";
 import { formatTask } from "./formatReview";
+import { recommendTask } from "./recommend";
 import { tailorTask } from "./tailor";
 
 /**
@@ -31,6 +32,7 @@ export function defineTask<Input, Output>(task: Task<Input, Output>) {
 export const TASKS: Record<string, Task<any, any>> = {
   tailor: tailorTask,
   format: formatTask,
+  recommend: recommendTask,
   coverLetter: coverLetterTask,
 };
 
