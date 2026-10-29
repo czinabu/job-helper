@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { FormatCard } from "@/components/FormatCard";
 import { JobPostingInput } from "@/components/JobPostingInput";
 import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
+import type { ResumeLayout } from "@/lib/layout";
 import { runTask } from "@/lib/ai";
 import { PROVIDERS, SETTINGS_KEY, defaultSettings, type ModelSettings } from "@/lib/providers";
 import { friendlyMessage } from "@/lib/errors";
@@ -38,6 +40,8 @@ export default function Home() {
   const [inputs, setInputs] = useStoredState<Inputs>("job-helper:inputs", EMPTY);
   const [tailoring, setTailoring] = useState(false);
   const [tailorError, setTailorError] = useState("");
+  // Measured from the uploaded file, so it is gone after a reload (the text is kept).
+  const [layout, setLayout] = useState<ResumeLayout | null>(null);
   const [tailored, setTailored] = useState<Tailored | null>(null);
 
   const setBackground = (patch: Partial<Background>) =>
@@ -86,7 +90,11 @@ export default function Home() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-medium">1. Your resume</h2>
-        <ResumeInput text={inputs.resume} onChange={(resume) => setInputs({ ...inputs, resume })} />
+        <ResumeInput
+          text={inputs.resume}
+          onChange={(resume) => setInputs({ ...inputs, resume })}
+          onLayout={setLayout}
+        />
       </section>
 
       <section className="space-y-3">
@@ -227,6 +235,12 @@ export default function Home() {
         >
           {tailorError}
         </p>
+      )}
+
+      {inputs.resume.trim() && (
+        <div className="border-t border-line pt-8">
+          <FormatCard resume={inputs.resume} layout={layout} settings={settings} />
+        </div>
       )}
 
       {tailored && (
