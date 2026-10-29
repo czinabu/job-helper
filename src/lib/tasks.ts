@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { TaskWeight } from "./providers";
+import { formatTask } from "./formatReview";
 import { tailorTask } from "./tailor";
 
 /**
@@ -28,6 +29,7 @@ export function defineTask<Input, Output>(task: Task<Input, Output>) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TASKS: Record<string, Task<any, any>> = {
   tailor: tailorTask,
+  format: formatTask,
 };
 
 export type TaskName = keyof typeof TASKS;
