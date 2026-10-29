@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    // The Role finder used to live at /jobs.
+    return [{ source: "/jobs", destination: "/role-finder", permanent: true }];
+  },
   async headers() {
     // Scripts and connections are limited to this site, Anthropic, and local
     // model servers, so a stray third-party script can't read or send the key.

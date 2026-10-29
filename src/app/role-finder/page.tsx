@@ -18,7 +18,7 @@ const EMPTY: TailorRequest = {
   jobPosting: "",
 };
 
-export default function JobsPage() {
+export default function RoleFinderPage() {
   const { settings } = useSettings();
   // The same saved resume and "About you" details the home page uses.
   const [inputs, , loaded] = useStoredState<TailorRequest>("job-helper:inputs", EMPTY);
@@ -49,7 +49,7 @@ export default function JobsPage() {
 
   function saveToLog(title: string) {
     try {
-      addApplication(newApplication({ role: title, status: "applied", notes: "Saved from job recommendations." }));
+      addApplication(newApplication({ role: title, status: "applied", notes: "Saved from Role finder." }));
       setSaved(new Set(saved).add(title));
     } catch {
       setError("Couldn't save to the log. Browser storage may be blocked.");
@@ -61,8 +61,11 @@ export default function JobsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">Find jobs that fit you</h1>
-        <p className="mt-1 text-sm text-muted">
+        <h1 className="text-2xl font-semibold">Role finder</h1>
+        <p className="mt-1 text-sm font-medium">
+          Suggests roles that fit your background and links to job searches. It doesn&apos;t list live openings.
+        </p>
+        <p className="mt-2 text-sm text-muted">
           Job Helper reads your resume and the &ldquo;About you&rdquo; details from the{" "}
           <Link href="/" className="text-accent underline">
             home page
@@ -97,11 +100,11 @@ export default function JobsPage() {
           onChange={(e) => setLocation({ value: e.target.value })}
         />
         <button className="btn" disabled={!hasResume || busy} onClick={find}>
-          {busy ? "Looking..." : "Recommend jobs"}
+          {busy ? "Looking..." : "Suggest roles"}
         </button>
       </div>
 
-      {busy && <Loading message="Finding jobs that fit you..." hint="This usually takes under a minute." />}
+      {busy && <Loading message="Finding roles that fit you..." hint="This usually takes under a minute." />}
 
       {error && (
         <p role="alert" className="whitespace-pre-line rounded-md border border-bad p-3 text-sm text-bad">
