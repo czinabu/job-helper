@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { JobPostingInput } from "@/components/JobPostingInput";
 import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
 import { runTask } from "@/lib/ai";
@@ -188,11 +189,9 @@ export default function Home() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-medium">3. The job posting</h2>
-        <textarea
-          className="field h-48"
-          value={inputs.jobPosting}
-          onChange={(e) => setInputs({ ...inputs, jobPosting: e.target.value })}
-          placeholder="Paste the full job description here."
+        <JobPostingInput
+          text={inputs.jobPosting}
+          onChange={(jobPosting) => setInputs({ ...inputs, jobPosting })}
         />
       </section>
 
