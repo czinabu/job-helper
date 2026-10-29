@@ -44,8 +44,10 @@ export default function Home() {
   const [inputs, setInputs] = useStoredState<Inputs>("job-helper:inputs", EMPTY);
   const [tailoring, setTailoring] = useState(false);
   const [tailorError, setTailorError] = useState("");
-  // Measured from the uploaded file, so it is gone after a reload (the text is kept).
-  const [layout, setLayout] = useState<ResumeLayout | null>(null);
+  // Measured from the uploaded file. Kept in storage so it survives switching pages.
+  const [stored, setStored] = useStoredState<{ layout: ResumeLayout | null }>("job-helper:layout", { layout: null });
+  const layout = stored.layout;
+  const setLayout = (layout: ResumeLayout | null) => setStored({ layout });
   const [tailored, setTailored] = useState<Tailored | null>(null);
   const [logForm, setLogForm] = useState<{ company: string; role: string } | null>(null);
   const [logged, setLogged] = useState(false);
