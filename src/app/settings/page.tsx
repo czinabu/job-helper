@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import {
+  BUDGET_COST_ESTIMATE,
+  BUDGET_MODEL,
   PROVIDERS,
   defaultSettings,
   type ProviderId,
@@ -164,13 +166,39 @@ export default function SettingsPage() {
 
         {info.isLocal && <ModelAdvisor provider={settings.provider} />}
 
+        {!info.isLocal && (
+          <div className="rounded-lg border border-line bg-card p-4">
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={settings.budgetMode}
+                onChange={(e) => setSettings({ ...settings, budgetMode: e.target.checked })}
+              />
+              <span>
+                <span className="font-medium">Budget mode</span>
+                <span className="block text-xs text-muted">
+                  Runs every task on Claude Haiku ({BUDGET_MODEL}), the cheapest model. A typical
+                  run costs {BUDGET_COST_ESTIMATE.budget}, compared with{" "}
+                  {BUDGET_COST_ESTIMATE.normal} on the models below. The tradeoff is quality:
+                  Haiku is fast and fine for short suggestions and recommendations, but resume
+                  rewrites and cover letters may read less polished and miss subtler details.
+                  Costs are rough estimates; your Anthropic account shows the real charges.
+                </span>
+              </span>
+            </label>
+          </div>
+        )}
+
         <ModelPicker
           id="model"
           label={info.isLocal ? "Model" : "Model for big jobs"}
           hint={
             info.isLocal
               ? undefined
-              : "Used for demanding work like rewriting your whole resume. Opus is the most capable."
+              : settings.budgetMode
+                ? "Ignored while Budget mode is on."
+                : "Used for demanding work like rewriting your whole resume. Opus is the most capable."
           }
           value={settings.model}
           options={result?.ok ? result.models : null}
