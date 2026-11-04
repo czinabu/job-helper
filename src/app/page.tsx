@@ -128,6 +128,15 @@ export default function Home() {
           Two steps: add your details, then see your results. Everything stays
           in this browser until you ask for help.
         </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-line bg-card p-3 text-sm">
+          <span className="flex-1">
+            Not sure what you&apos;ll get? See full results for a sample resume first. No API key
+            needed.
+          </span>
+          <Link href="/example" className="btn-secondary">
+            See an example
+          </Link>
+        </div>
         <p className="mt-2 text-xs text-muted">
           Using: {PROVIDERS[settings.provider].label}
           {settings.model ? `, ${settings.model}` : ""} ·{" "}

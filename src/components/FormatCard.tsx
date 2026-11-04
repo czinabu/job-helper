@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Loading } from "@/components/Loading";
 import { runTask } from "@/lib/ai";
 import { friendlyMessage } from "@/lib/errors";
-import { checkFormat, describeLayout, type CheckStatus } from "@/lib/formatCheck";
+import { checkFormat, describeLayout, type CheckStatus, type FormatReport } from "@/lib/formatCheck";
 import type { FormatReview } from "@/lib/formatReview";
 import type { ResumeLayout } from "@/lib/layout";
 import type { ModelSettings } from "@/lib/providers";
@@ -54,11 +54,35 @@ export function FormatCard({
     }
   }
 
-  const order: CheckStatus[] = ["fail", "warn", "pass"];
-  const checks = [...report.checks].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
-
   return (
     <section className="space-y-4 rounded-lg border border-line bg-card p-5">
+      <FormatChecks report={report} />
+
+      <div className="space-y-3 border-t border-line pt-4">
+        {!review && (
+          <div className="flex flex-wrap items-center gap-3">
+            <button className="btn-secondary" disabled={busy} onClick={ask}>
+              {busy ? "Reviewing..." : "Get an expert-style review"}
+            </button>
+            <span className="text-xs text-muted">
+              The AI reads your resume for section order, bullet wording, and consistency.
+            </span>
+          </div>
+        )}
+        {busy && <Loading message="Reviewing your resume..." hint="This usually takes under a minute." />}
+        {error && <p role="alert" className="whitespace-pre-line text-sm text-bad">{error}</p>}
+        {review && <FormatReviewView review={review} />}
+      </div>
+    </section>
+  );
+}
+
+/** The score and the measured checks, also used by the example page. */
+export function FormatChecks({ report }: { report: FormatReport }) {
+  const order: CheckStatus[] = ["fail", "warn", "pass"];
+  const checks = [...report.checks].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+  return (
+    <>
       <div className="flex items-baseline gap-3">
         <h2 className="text-lg font-medium">Formatting and spacing</h2>
         <span className="ml-auto text-3xl font-semibold">{report.score}</span>
@@ -88,49 +112,38 @@ export function FormatCard({
           </li>
         ))}
       </ul>
+    </>
+  );
+}
 
-      <div className="space-y-3 border-t border-line pt-4">
-        {!review && (
-          <div className="flex flex-wrap items-center gap-3">
-            <button className="btn-secondary" disabled={busy} onClick={ask}>
-              {busy ? "Reviewing..." : "Get an expert-style review"}
-            </button>
-            <span className="text-xs text-muted">
-              The AI reads your resume for section order, bullet wording, and consistency.
-            </span>
-          </div>
-        )}
-        {busy && <Loading message="Reviewing your resume..." hint="This usually takes under a minute." />}
-        {error && <p role="alert" className="whitespace-pre-line text-sm text-bad">{error}</p>}
-        {review && (
-          <div className="space-y-3 text-sm">
-            <p>{review.summary}</p>
-            {review.strengths.length > 0 && (
-              <div>
-                <h3 className="mb-1 font-medium">Doing well</h3>
-                <ul className="list-disc space-y-1 pl-5 text-muted">
-                  {review.strengths.map((s, i) => (
-                    <li key={i}>{s}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {review.improvements.length > 0 && (
-              <div>
-                <h3 className="mb-1 font-medium">Worth changing</h3>
-                <ul className="space-y-2">
-                  {review.improvements.map((m, i) => (
-                    <li key={i} className="rounded-md border border-line p-3">
-                      <p className="font-medium">{m.issue}</p>
-                      <p className="mt-1 text-muted">{m.fix}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </section>
+/** The AI's formatting review, also used by the example page. */
+export function FormatReviewView({ review }: { review: FormatReview }) {
+  return (
+    <div className="space-y-3 text-sm">
+      <p>{review.summary}</p>
+      {review.strengths.length > 0 && (
+        <div>
+          <h3 className="mb-1 font-medium">Doing well</h3>
+          <ul className="list-disc space-y-1 pl-5 text-muted">
+            {review.strengths.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {review.improvements.length > 0 && (
+        <div>
+          <h3 className="mb-1 font-medium">Worth changing</h3>
+          <ul className="space-y-2">
+            {review.improvements.map((m, i) => (
+              <li key={i} className="rounded-md border border-line p-3">
+                <p className="font-medium">{m.issue}</p>
+                <p className="mt-1 text-muted">{m.fix}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
