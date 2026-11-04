@@ -12,7 +12,7 @@ import { tailorTask } from "./tailor";
  * (which runs them on Claude), so prompts live in one place.
  */
 export interface Task<Input, Output> {
-  /** Heavy tasks run on the main Claude model (Opus), light ones on the quick model. */
+  /** Heavy tasks run on the main Claude model (Sonnet by default), light ones on the quick model. */
   weight: TaskWeight;
   system: string;
   user: (input: Input) => string;

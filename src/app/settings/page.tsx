@@ -220,7 +220,7 @@ export default function SettingsPage() {
               ? undefined
               : settings.budgetMode
                 ? "Ignored while Budget mode is on."
-                : "Used for demanding work like rewriting your whole resume. Opus is the most capable."
+                : "Used for demanding work like rewriting your whole resume. Sonnet is the default; Opus is the most capable but costs more."
           }
           value={settings.model}
           options={result?.ok ? result.models : null}
@@ -231,7 +231,7 @@ export default function SettingsPage() {
           <ModelPicker
             id="quickModel"
             label="Model for quick jobs"
-            hint="Used for lighter work like short suggestions. A smaller model like Sonnet or Haiku is faster and cheaper."
+            hint="Used for lighter work like short suggestions. Haiku is the default: fast and cheapest."
             value={settings.quickModel}
             options={result?.ok ? result.models : null}
             onChange={(quickModel) => setSettings({ ...settings, quickModel })}

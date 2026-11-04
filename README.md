@@ -31,8 +31,8 @@ If something isn't set up right, Test connection tells you what to fix in plain 
 
 Claude has two model settings so the expensive model is only used when it's worth it:
 
-- **Model for big jobs** (default: Claude Opus): demanding work like rewriting your whole resume.
-- **Model for quick jobs** (default: Claude Sonnet): lighter work like short suggestions.
+- **Model for big jobs** (default: Claude Sonnet): demanding work like rewriting your whole resume. Switch to Opus in Model settings for the most capable (and priciest) results.
+- **Model for quick jobs** (default: Claude Haiku): lighter work like short suggestions.
 
 Local models use the one model you pick for everything.
 
