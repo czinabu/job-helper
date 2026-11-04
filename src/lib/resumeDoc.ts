@@ -8,7 +8,7 @@ import JSZip from "jszip";
 
 export const TEMPLATES = {
   classic: { label: "Classic", note: "Times New Roman, centered name, ruled headings" },
-  modern: { label: "Modern", note: "Arial, left-aligned name, bold uppercase headings" },
+  modern: { label: "Modern", note: "Arial, blue accent, left-aligned name, ruled uppercase headings" },
 } as const;
 export type TemplateId = keyof typeof TEMPLATES;
 
@@ -65,65 +65,244 @@ export function saveBlob(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/** jsPDF is large, so it loads only when someone asks for a PDF. */
+const ACCENT: [number, number, number] = [29, 78, 216]; // Modern template accent (blue)
+const MUTED: [number, number, number] = [90, 98, 110];
+const INK: [number, number, number] = [24, 28, 36];
+
+/** "Company - Role | June 2026 - Present" -> company, role, dates. Only lines that end in a date-like part count. */
+export function parseEntryLine(text: string): { company: string; role: string; dates: string } | null {
+  const i = text.lastIndexOf(" | ");
+  if (i < 0) return null;
+  const dates = text.slice(i + 3).trim();
+  if (!/\d{4}|present|current/i.test(dates)) return null;
+  const left = text.slice(0, i).trim();
+  const m = /^(.+?)\s+[-–—]\s+(.+)$/.exec(left);
+  return { company: m ? m[1] : left, role: m ? m[2] : "", dates };
+}
+
+type Word = { text: string; url?: string };
+
+/** Splits a contact line into words, keeping links: [label](url), bare URLs, and email addresses become clickable. */
+export function contactWords(line: string): Word[] {
+  const words: Word[] = [];
+  const re = /\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)|(https?:\/\/[^\s•|]+)|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
+  const plain = (t: string) => {
+    for (const w of t.split(/\s+/)) if (w) words.push({ text: w });
+  };
+  let last = 0;
+  for (let m = re.exec(line); m; m = re.exec(line)) {
+    plain(line.slice(last, m.index));
+    if (m[1]) for (const w of m[1].split(/\s+/)) words.push({ text: w, url: m[2] });
+    else if (m[3]) words.push({ text: m[3].replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""), url: m[3] });
+    else words.push({ text: m[4], url: `mailto:${m[4]}` });
+    last = m.index + m[0].length;
+  }
+  plain(line.slice(last));
+  return words;
+}
+
+/**
+ * jsPDF is large, so it loads only when someone asks for a PDF. A resume that is a little too long for one
+ * page is shrunk step by step (type size, spacing, then margins) until it fits, down to a still-readable floor.
+ */
 export async function makeResumePdf(text: string, template: TemplateId): Promise<Blob> {
   const { jsPDF } = await import("jspdf");
-  const doc = new jsPDF({ unit: "pt", format: "letter" });
-  const font = template === "classic" ? "times" : "helvetica";
-  const body = 11;
-  const width = PAGE.w - MARGIN_PT * 2;
-  let y = MARGIN_PT;
+  const blocks = parseResumeText(text);
+  const steps = [1, 0.96, 0.92, 0.88, 0.85];
+  let result: { doc: InstanceType<typeof jsPDF>; pages: number } | null = null;
+  for (const scale of steps) {
+    result = renderResume(jsPDF, blocks, template, scale);
+    if (result.pages === 1) break;
+  }
+  // Still more than one page at the smallest size: use full size, which reads best across pages.
+  if (result && result.pages > 1) result = renderResume(jsPDF, blocks, template, 1);
+  return result!.doc.output("blob");
+}
 
+function renderResume(
+  jsPDF: typeof import("jspdf").jsPDF,
+  blocks: Block[],
+  template: TemplateId,
+  s: number,
+): { doc: InstanceType<typeof jsPDF>; pages: number } {
+  const modern = template === "modern";
+  const doc = new jsPDF({ unit: "pt", format: "letter" });
+  const font = modern ? "helvetica" : "times";
+  const margin = s < 0.9 ? 43 : MARGIN_PT;
+  const width = PAGE.w - margin * 2;
+  const body = 11 * s;
+  const lead = 1.25;
+  const bottom = PAGE.h - margin;
+  let y = margin;
+
+  const color = (c: [number, number, number]) => doc.setTextColor(c[0], c[1], c[2]);
+  const setFont = (size: number, style: "normal" | "bold" | "italic" = "normal") => {
+    doc.setFont(font, style);
+    doc.setFontSize(size);
+  };
+  const lines = (str: string, size: number, w: number, style: "normal" | "bold" = "normal"): string[] => {
+    setFont(size, style);
+    return doc.splitTextToSize(str, w);
+  };
   const room = (h: number) => {
-    if (y + h > PAGE.h - MARGIN_PT) {
+    if (y + h > bottom) {
       doc.addPage();
-      y = MARGIN_PT;
+      y = margin;
     }
   };
+
+  // Writes wrapped text. Each line's baseline is placed before its glyphs are drawn.
   const write = (
     str: string,
-    opts: { size: number; style?: "normal" | "bold"; align?: "left" | "center"; indent?: number; gap?: number },
+    o: { size: number; style?: "normal" | "bold"; align?: "left" | "center"; indent?: number; gap?: number; rgb?: [number, number, number]; before?: () => void },
   ) => {
-    doc.setFont(font, opts.style ?? "normal");
-    doc.setFontSize(opts.size);
-    const indent = opts.indent ?? 0;
-    const lines: string[] = doc.splitTextToSize(str, width - indent);
-    const lead = opts.size * 1.25;
-    for (const line of lines) {
-      room(lead);
-      y += lead;
-      if (opts.align === "center") doc.text(line, PAGE.w / 2, y - opts.size * 0.25, { align: "center" });
-      else doc.text(line, MARGIN_PT + indent, y - opts.size * 0.25);
-    }
-    y += opts.gap ?? 0;
+    const indent = o.indent ?? 0;
+    const ls = lines(str, o.size, width - indent, o.style ?? "normal");
+    color(o.rgb ?? INK);
+    ls.forEach((line, n) => {
+      room(o.size * lead);
+      y += o.size * lead;
+      if (n === 0) o.before?.();
+      setFont(o.size, o.style ?? "normal");
+      color(o.rgb ?? INK);
+      if (o.align === "center") doc.text(line, PAGE.w / 2, y - o.size * 0.25, { align: "center" });
+      else doc.text(line, margin + indent, y - o.size * 0.25);
+    });
+    y += o.gap ?? 0;
   };
 
-  for (const b of parseResumeText(text)) {
-    if (b.kind === "name") {
-      write(b.text, { size: 20, style: "bold", align: template === "classic" ? "center" : "left", gap: 2 });
-    } else if (b.kind === "contact") {
-      write(b.text, { size: 10, align: template === "classic" ? "center" : "left" });
-    } else if (b.kind === "heading") {
-      y += 8;
-      room(40); // keep a heading with the line after it
-      const label = template === "modern" ? b.text.toUpperCase() : b.text;
-      write(label, { size: 12, style: "bold", gap: 1 });
-      if (template === "classic") {
-        doc.setLineWidth(0.5);
-        doc.line(MARGIN_PT, y, PAGE.w - MARGIN_PT, y);
+  const writeContact = (line: string, center: boolean) => {
+    const size = 10 * s;
+    setFont(size);
+    const words = contactWords(line);
+    const space = doc.getTextWidth(" ");
+    const rows: Word[][] = [[]];
+    let rowW = 0;
+    for (const w of words) {
+      const ww = doc.getTextWidth(w.text);
+      if (rows[rows.length - 1].length && rowW + space + ww > width) {
+        rows.push([]);
+        rowW = 0;
       }
-      y += 3;
-    } else if (b.kind === "bullet") {
-      room(body * 1.25);
-      const startY = y;
-      write(b.text, { size: body, indent: 14, gap: 1 });
-      doc.setFont(font, "normal");
-      doc.text("•", MARGIN_PT + 3, startY + body * 1.25 - body * 0.25);
-    } else {
-      write(b.text, { size: body, gap: 1 });
+      rows[rows.length - 1].push(w);
+      rowW += (rowW ? space : 0) + ww;
     }
-  }
-  return doc.output("blob");
+    for (const row of rows) {
+      room(size * lead);
+      y += size * lead;
+      const total = row.reduce((t, w, i) => t + doc.getTextWidth(w.text) + (i ? space : 0), 0);
+      let x = center ? (PAGE.w - total) / 2 : margin;
+      const base = y - size * 0.25;
+      for (const w of row) {
+        const ww = doc.getTextWidth(w.text);
+        if (w.url) {
+          color(modern ? ACCENT : INK);
+          doc.text(w.text, x, base);
+          doc.link(x, base - size, ww, size * 1.2, { url: w.url });
+          doc.setLineWidth(0.4);
+          doc.setDrawColor(...(modern ? ACCENT : INK));
+          doc.line(x, base + 1.2, x + ww, base + 1.2);
+        } else {
+          color(modern ? MUTED : INK);
+          doc.text(w.text, x, base);
+        }
+        x += ww + space;
+      }
+    }
+    y += 1;
+  };
+
+  // Height of the first thing under a heading or entry line, so they are never left alone at the bottom of a page.
+  const firstHeight = (i: number): number => {
+    const b = blocks[i];
+    if (!b) return 0;
+    if (b.kind === "text" && parseEntryLine(b.text)) {
+      const n = blocks[i + 1];
+      return 13 * s * lead + (n && n.kind === "bullet" ? body * lead : 0);
+    }
+    return body * lead;
+  };
+
+  blocks.forEach((b, i) => {
+    if (b.kind === "name") {
+      write(b.text, { size: (modern ? 26 : 20) * s, style: "bold", align: modern ? "left" : "center", gap: 2 * s, rgb: INK });
+    } else if (b.kind === "contact") {
+      writeContact(b.text, !modern);
+    } else if (b.kind === "heading") {
+      const size = (modern ? 11 : 12) * s;
+      y += (modern ? 9 : 8) * s;
+      room(size * lead + 6 + firstHeight(i + 1));
+      if (modern) {
+        doc.setCharSpace(0.8);
+        write(b.text.toUpperCase(), { size, style: "bold", rgb: ACCENT, gap: 0 });
+        doc.setCharSpace(0);
+        doc.setLineWidth(0.9);
+        doc.setDrawColor(...ACCENT);
+        doc.line(margin, y + 1.5, PAGE.w - margin, y + 1.5);
+        y += 4 * s;
+      } else {
+        write(b.text, { size, style: "bold", gap: 1 });
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(0, 0, 0);
+        doc.line(margin, y, PAGE.w - margin, y);
+        y += 3 * s;
+      }
+    } else if (b.kind === "bullet") {
+      const size = body;
+      write(b.text, {
+        size,
+        indent: 14 * s,
+        gap: 1.5 * s,
+        // The bullet is drawn before its sentence so text extraction reads it first, as it appears on the page.
+        before: () => {
+          setFont(size);
+          color(modern ? ACCENT : INK);
+          doc.text("•", margin + 3 * s, y - size * 0.25);
+        },
+      });
+    } else {
+      const entry = parseEntryLine(b.text);
+      if (!entry) {
+        write(b.text, { size: body, gap: 1 });
+        return;
+      }
+      const size = 11.5 * s;
+      y += 5 * s; // space between roles
+      room(size * lead + firstHeight(i + 1) - 13 * s * lead + 1);
+      setFont(size, "bold");
+      const datesW = (setFont(size - 0.5), doc.getTextWidth(entry.dates));
+      const leftW = width - datesW - 12;
+      const roleStyle = modern ? "normal" : "italic";
+      // Company in bold, role after it; wrap onto a second line if the pair is too wide.
+      setFont(size, "bold");
+      const compW = doc.getTextWidth(entry.company);
+      setFont(size, roleStyle);
+      const sepText = entry.role ? "  |  " : "";
+      const roleFull = entry.role ? `${sepText}${entry.role}` : "";
+      room(size * lead);
+      y += size * lead;
+      const base = y - size * 0.25;
+      setFont(size, "bold");
+      color(INK);
+      doc.text(entry.company, margin, base);
+      let cursor = margin + compW;
+      if (roleFull) {
+        setFont(size, roleStyle);
+        const rl: string[] = doc.splitTextToSize(roleFull, Math.max(leftW - compW, 60));
+        doc.text(rl[0], cursor, base);
+        for (const extra of rl.slice(1)) {
+          y += size * lead;
+          doc.text(extra.trimStart(), margin, y - size * 0.25);
+        }
+        cursor += 0;
+      }
+      setFont(size - 0.5, "normal");
+      color(modern ? MUTED : INK);
+      doc.text(entry.dates, PAGE.w - margin, base, { align: "right" });
+      y += 2 * s;
+    }
+  });
+  return { doc, pages: doc.getNumberOfPages() };
 }
 
 /** Plain-text letter: first lines are kept as written, blank lines separate paragraphs. */
