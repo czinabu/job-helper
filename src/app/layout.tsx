@@ -4,7 +4,7 @@ import { NavLinks } from "@/components/NavLinks";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Job Helper",
+  title: "Rolevisor",
   description: "Tailor your resume to any job posting, with Claude or a free local model.",
 };
 
@@ -19,7 +19,7 @@ export default function RootLayout({
         <header className="border-b border-line">
           <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-2 px-4 pt-4">
             <Link href="/" className="text-lg font-semibold">
-              Job Helper
+              Rolevisor
             </Link>
             <NavLinks />
           </nav>

@@ -66,7 +66,7 @@ export default function RoleFinderPage() {
           Suggests roles that fit your background and links to job searches. It doesn&apos;t list live openings.
         </p>
         <p className="mt-2 text-sm text-muted">
-          Job Helper reads your resume and the &ldquo;About you&rdquo; details from the{" "}
+          Rolevisor reads your resume and the &ldquo;About you&rdquo; details from the{" "}
           <Link href="/" className="text-accent underline">
             home page
           </Link>{" "}

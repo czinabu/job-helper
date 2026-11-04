@@ -55,7 +55,7 @@ export function SuggestionsCard({
       <h2 className="text-lg font-medium">Suggestions for this job</h2>
       <p className="text-sm text-muted">
         The changes most worth making first: bullets to strengthen, gaps to address, and what to
-        emphasize. Rewrites only use what you&apos;ve told Job Helper.
+        emphasize. Rewrites only use what you&apos;ve told Rolevisor.
       </p>
       <button className="btn" disabled={busy} onClick={run}>
         {busy ? "Thinking..." : result ? "Refresh suggestions" : "Get suggestions"}

@@ -4,7 +4,7 @@ A local model runs on your own computer instead of on the internet. It's free, a
 
 **Pick one of the two options below.** If you're not sure, choose **LM Studio**: it's a normal app with buttons, so there's no typing commands.
 
-> **Use Chrome, Edge, or Firefox.** The Job Helper website talks to the model on your computer directly from your browser. Safari may block this. The first time you click Test connection, your browser may ask whether the site can **access devices on your local network**. Click **Allow**: that's how it reaches LM Studio or Ollama.
+> **Use Chrome, Edge, or Firefox.** The Rolevisor website talks to the model on your computer directly from your browser. Safari may block this. The first time you click Test connection, your browser may ask whether the site can **access devices on your local network**. Click **Allow**: that's how it reaches LM Studio or Ollama.
 
 ## Which model should I download?
 
@@ -31,13 +31,13 @@ Then find your computer in this table:
 | NVIDIA card with 12 to 16 GB | Gemma 4 12B | `ollama pull gemma4:12b` | about 8 GB | under 1 min |
 | NVIDIA card with 24 GB or more | Gemma 4 31B | `ollama pull gemma4:31b` | about 20 GB | under 1 min |
 
-Job Helper's **Model settings** page has the same picker: choose **LM Studio** or **Ollama** and look for "Which model fits my computer?".
+Rolevisor's **Model settings** page has the same picker: choose **LM Studio** or **Ollama** and look for "Which model fits my computer?".
 
 Times are rough guesses for a one-page resume, and the first run is slower while the model loads. Older or thinner laptops will be at the slow end.
 
 ### Why these models
 
-- **Gemma 4** (from Google) is the most reliable family right now at giving answers in the exact format Job Helper needs, and it writes clear English. Most picks are Gemma 4.
+- **Gemma 4** (from Google) is the most reliable family right now at giving answers in the exact format Rolevisor needs, and it writes clear English. Most picks are Gemma 4.
 - **Qwen3.5** (from Alibaba) has small sizes that squeeze into less memory, so it's the pick for 8 GB computers and 8 GB graphics cards.
 - **Gemma 4 26B** is a "mixture of experts" model: it's large, but only a small part of it works on each word, so it's fast even without a graphics card. That makes it the best pick for big-memory PCs without an NVIDIA card.
 - **Why not bigger?** A model needs its download size in free memory, plus a few GB to spare. On a Mac, only about two thirds of the memory can be used for the model, which is why a 24 GB Mac stays on the 12B model. If your computer slows to a crawl, step down one row.
@@ -75,18 +75,18 @@ Be ready to edit. Even the biggest model here is a step below Claude at careful,
 
 ### 3. Turn on the server and switch on Enable CORS
 
-> **Don't skip Enable CORS.** It's off by default, and without it Job Helper can't connect even though LM Studio is running. This is the step people most often miss.
+> **Don't skip Enable CORS.** It's off by default, and without it Rolevisor can't connect even though LM Studio is running. This is the step people most often miss.
 
 1. Click the **Developer** tab on the left side.
 2. At the top, flip the **Status** switch so it says **Running**.
-3. Click **Server Settings** (next to the Status switch) and switch on **Enable CORS**. This lets the Job Helper website talk to LM Studio.
-4. You should see a line like `Reachable at: http://localhost:1234`. If it shows a different address (for example `http://169.254...` because **Serve on Local Network** is on), that's fine: keep using `http://localhost:1234/v1` in Job Helper.
+3. Click **Server Settings** (next to the Status switch) and switch on **Enable CORS**. This lets the Rolevisor website talk to LM Studio.
+4. You should see a line like `Reachable at: http://localhost:1234`. If it shows a different address (for example `http://169.254...` because **Serve on Local Network** is on), that's fine: keep using `http://localhost:1234/v1` in Rolevisor.
 
-Keep LM Studio open while you use Job Helper.
+Keep LM Studio open while you use Rolevisor.
 
-### 4. Connect Job Helper
+### 4. Connect Rolevisor
 
-1. In Job Helper, click **Model settings**.
+1. In Rolevisor, click **Model settings**.
 2. Choose **LM Studio (local, free)**. Leave the server address as `http://localhost:1234/v1`.
 3. Click **Test connection**. You should see "Connected!" and your model in the list.
 
@@ -116,20 +116,20 @@ After that Ollama runs quietly in the background (look for the llama icon in you
 
 3. Wait for the download to reach 100%. You can close the terminal afterwards.
 
-### 3. Allow the Job Helper website to use Ollama
+### 3. Allow the Rolevisor website to use Ollama
 
-Ollama only answers websites you've approved, so you need to tell it the Job Helper site's address. The address is the start of what's in your browser's address bar when you're on Job Helper, for example `https://job-helper.vercel.app` (no slash at the end). If you skip this, Test connection shows the exact address to use.
+Ollama only answers websites you've approved, so you need to tell it the Rolevisor site's address. The address is the start of what's in your browser's address bar when you're on Rolevisor, for example `https://job-helper.vercel.app` (no slash at the end). If you skip this, Test connection shows the exact address to use.
 
 **On Windows:**
 
 1. Click Start, type `environment variables`, and open **Edit environment variables for your account**.
 2. Under the top list, click **New...**
-3. For **Variable name**, type `OLLAMA_ORIGINS`. For **Variable value**, paste the Job Helper address. Click **OK**, then **OK** again.
+3. For **Variable name**, type `OLLAMA_ORIGINS`. For **Variable value**, paste the Rolevisor address. Click **OK**, then **OK** again.
 4. Quit Ollama (right-click the llama icon near the clock, then **Quit**) and open it again.
 
 **On Mac:**
 
-1. Open Terminal and run this, with your Job Helper address in the quotes:
+1. Open Terminal and run this, with your Rolevisor address in the quotes:
 
    ```
    launchctl setenv OLLAMA_ORIGINS "https://job-helper.vercel.app"
@@ -139,9 +139,9 @@ Ollama only answers websites you've approved, so you need to tell it the Job Hel
 
 This setting is cleared when your Mac restarts, so run the command again after a restart.
 
-### 4. Connect Job Helper
+### 4. Connect Rolevisor
 
-1. In Job Helper, click **Model settings**.
+1. In Rolevisor, click **Model settings**.
 2. Choose **Ollama (local, free)**. Leave the server address as `http://localhost:11434/v1`.
 3. Click **Test connection**. You should see "Connected!" and your model in the list.
 
@@ -153,12 +153,12 @@ This setting is cleared when your Mac restarts, so run the command again after a
 Enable CORS is off. In LM Studio, open the **Developer** tab, click **Server Settings**, and switch on **Enable CORS**. Then click Test connection again. (In LM Studio's server log this looks like `Unexpected endpoint or method. (OPTIONS /v1/models)`.)
 
 **"Ollama is running, but it isn't letting this website in"**
-`OLLAMA_ORIGINS` isn't set to the Job Helper address, or Ollama wasn't restarted after you set it. See Option B, step 3.
+`OLLAMA_ORIGINS` isn't set to the Rolevisor address, or Ollama wasn't restarted after you set it. See Option B, step 3.
 
 **"Couldn't reach LM Studio" or "Couldn't reach Ollama"**
 Work through the checklist in the message. The usual causes are:
 - The app isn't open, or (for LM Studio) the server is off. Check that the Developer tab says **Running**.
-- LM Studio's **Enable CORS** setting is off, or Ollama's `OLLAMA_ORIGINS` isn't set to the Job Helper address (or Ollama wasn't restarted after setting it).
+- LM Studio's **Enable CORS** setting is off, or Ollama's `OLLAMA_ORIGINS` isn't set to the Rolevisor address (or Ollama wasn't restarted after setting it).
 - Your browser asked about local network access and it was blocked. In Chrome or Edge, click the icon at the left of the address bar, find **Local network access**, and set it to **Allow**.
 - You're on Safari. Try Chrome, Edge, or Firefox.
 
@@ -171,7 +171,7 @@ The server address is slightly off. Use exactly `http://localhost:1234/v1` for L
 **Results are very slow**
 Try the model one row up in the table (a smaller one). Closing other big apps (like games or many browser tabs) also helps. If your computer freezes or the fan roars while it works, the model is too big for your memory.
 
-**"The local model's answer wasn't in the format Job Helper expected"**
+**"The local model's answer wasn't in the format Rolevisor expected"**
 Try again once. If it keeps happening, the model may be running out of room: in LM Studio, raise **Context Length** to 8192 or more when loading the model. In the Ollama app, open Settings and raise the context length if your version has that option. A bigger model also helps.
 
 **Results are low quality**

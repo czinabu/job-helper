@@ -51,7 +51,7 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-2xl font-semibold">Model settings</h1>
         <p className="mt-1 text-sm text-muted">
-          Choose which AI model reads your resume. Your settings are saved only in this browser. Nothing you enter here is sent to Job Helper&apos;s server.
+          Choose which AI model reads your resume. Your settings are saved only in this browser. Nothing you enter here is sent to Rolevisor&apos;s server.
         </p>
       </div>
 
@@ -156,7 +156,7 @@ export default function SettingsPage() {
               <p className="font-medium text-foreground">Your key and your privacy</p>
               <p className="mt-1">
                 Your key and resume go straight from your browser to Anthropic. They never pass
-                through Job Helper&apos;s server, and we don&apos;t log or keep them. The key stays
+                through Rolevisor&apos;s server, and we don&apos;t log or keep them. The key stays
                 in this browser only. Use a key with a spending limit, and delete it at
                 console.anthropic.com if you ever think it&apos;s been exposed.
               </p>

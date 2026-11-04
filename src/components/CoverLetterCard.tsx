@@ -75,7 +75,7 @@ export function CoverLetterCard({
       <h2 className="text-lg font-medium">Cover letter</h2>
       <p className="text-sm text-muted">
         Written from your resume, your About you details, and the job posting. It only uses what
-        you&apos;ve told Job Helper, so check it before you send it.
+        you&apos;ve told Rolevisor, so check it before you send it.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">

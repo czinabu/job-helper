@@ -151,7 +151,7 @@ export async function runLocalTask<Input, Output>(
   const parsed = task.output.safeParse(extractJson(data.choices?.[0]?.message?.content ?? ""));
   if (!parsed.success) {
     throw new FriendlyError(
-      "The local model's answer wasn't in the format Job Helper expected. Try again, or try a bigger model.",
+      "The local model's answer wasn't in the format Rolevisor expected. Try again, or try a bigger model.",
     );
   }
   return parsed.data;
