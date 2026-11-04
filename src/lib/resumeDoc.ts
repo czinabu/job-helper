@@ -81,12 +81,60 @@ export function parseEntryLine(text: string): { company: string; role: string; d
   return { company: m ? m[1] : left, role: m ? m[2] : "", dates };
 }
 
+/** Full URLs for the person's profile links; an empty string means none. */
+export type ProfileLinkUrls = { linkedin?: string; github?: string; website?: string };
+
+const LINK_LABELS: { key: keyof ProfileLinkUrls; label: string; words: RegExp; host: RegExp }[] = [
+  { key: "linkedin", label: "LinkedIn", words: /LinkedIn/i, host: /linkedin\.com/i },
+  { key: "github", label: "GitHub", words: /GitHub/i, host: /github\.com/i },
+  { key: "website", label: "Portfolio", words: /Portfolio|Website/i, host: /^$/ },
+];
+
+/**
+ * Turns the bare words "LinkedIn", "GitHub", and "Portfolio"/"Website" in the contact lines into links to
+ * the person's saved URLs, and adds a link that isn't mentioned at all to the end of the contact lines.
+ * Lines below the first heading are left alone, so "Git/GitHub" in a skills list stays plain text.
+ */
+export function addProfileLinks(text: string, links?: ProfileLinkUrls): string {
+  const wanted = LINK_LABELS.filter((l) => links?.[l.key]?.trim());
+  if (!wanted.length) return text;
+  const lines = text.replace(/\r\n?/g, "\n").split("\n");
+  const firstHeading = lines.findIndex((l) => /^\s*#{1,6}\s/.test(l));
+  const end = firstHeading < 0 ? lines.length : firstHeading;
+  const nameAt = lines.findIndex((l) => l.trim());
+  if (nameAt < 0 || nameAt >= end) return text;
+  const contact: number[] = [];
+  for (let i = nameAt + 1; i < end; i++) if (lines[i].trim()) contact.push(i);
+
+  const missing: string[] = [];
+  for (const l of wanted) {
+    const url = links![l.key]!.trim();
+    // Already linked (a markdown link to it, or the address written out): nothing to do.
+    if (contact.some((i) => lines[i].includes(`](${url})`) || (l.key !== "website" && l.host.test(lines[i])))) continue;
+    // A bare word, not already inside [label](url).
+    const word = new RegExp(`(^|[^\\w\\[/.])(${l.words.source})(?![\\w\\]])`, "i");
+    const at = contact.find((i) => word.test(lines[i]));
+    if (at !== undefined) lines[at] = lines[at].replace(word, (_m, pre, w) => `${pre}[${w}](${url})`);
+    else missing.push(`[${l.label}](${url})`);
+  }
+  if (missing.length) {
+    if (contact.length) {
+      const last = contact[contact.length - 1];
+      const sep = lines[last].includes("|") && !lines[last].includes("•") ? " | " : " • ";
+      lines[last] = `${lines[last].trimEnd()}${sep}${missing.join(sep)}`;
+    } else {
+      lines.splice(nameAt + 1, 0, missing.join(" • "));
+    }
+  }
+  return lines.join("\n");
+}
+
 type Word = { text: string; url?: string };
 
 /** Splits a contact line into words, keeping links: [label](url), bare URLs, and email addresses become clickable. */
 export function contactWords(line: string): Word[] {
   const words: Word[] = [];
-  const re = /\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)|(https?:\/\/[^\s•|]+)|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
+  const re = /\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)|((?:https?:\/\/|www\.)[^\s•|]+|\b(?:[a-z]{2,3}\.)?(?:linkedin|github)\.com\/[^\s•|]+)|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
   const plain = (t: string) => {
     for (const w of t.split(/\s+/)) if (w) words.push({ text: w });
   };
@@ -94,7 +142,10 @@ export function contactWords(line: string): Word[] {
   for (let m = re.exec(line); m; m = re.exec(line)) {
     plain(line.slice(last, m.index));
     if (m[1]) for (const w of m[1].split(/\s+/)) words.push({ text: w, url: m[2] });
-    else if (m[3]) words.push({ text: m[3].replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""), url: m[3] });
+    else if (m[3]) {
+      const href = /^https?:\/\//i.test(m[3]) ? m[3] : `https://${m[3]}`;
+      words.push({ text: m[3].replace(/^https?:\/\/(www\.)?/, "").replace(/^www\./, "").replace(/\/$/, ""), url: href });
+    }
     else words.push({ text: m[4], url: `mailto:${m[4]}` });
     last = m.index + m[0].length;
   }
@@ -116,9 +167,9 @@ const FITS: Fit[] = [
  * is tightened step by step (spacing, then type size and margins) until it fits. One that can't fit even at the
  * tightest step is laid out at full size, which reads best across two pages.
  */
-export async function makeResumePdf(text: string, template: TemplateId): Promise<Blob> {
+export async function makeResumePdf(text: string, template: TemplateId, links?: ProfileLinkUrls): Promise<Blob> {
   const { jsPDF } = await import("jspdf");
-  const blocks = parseResumeText(text);
+  const blocks = parseResumeText(addProfileLinks(text, links));
   for (const fit of FITS) {
     const doc = renderResume(new jsPDF({ unit: "pt", format: "letter" }), blocks, template, fit);
     if (doc.getNumberOfPages() === 1) return doc.output("blob");
@@ -401,11 +452,11 @@ async function zipDocx(paras: Para[], font: string, links: string[] = [], margin
   });
 }
 
-export function makeResumeDocx(text: string, template: TemplateId): Promise<Blob> {
+export function makeResumeDocx(text: string, template: TemplateId, links?: ProfileLinkUrls): Promise<Blob> {
   const classic = template === "classic";
   const accent = "1D4ED8";
-  const links: string[] = [];
-  const blocks = parseResumeText(text);
+  const linkTargets: string[] = [];
+  const blocks = parseResumeText(addProfileLinks(text, links));
   const paras: Para[] = blocks.map((b, i): Para => {
     switch (b.kind) {
       case "name":
@@ -415,8 +466,8 @@ export function makeResumeDocx(text: string, template: TemplateId): Promise<Blob
         const runs = contactWords(b.text).flatMap((w, n): Run[] => {
           const gap: Run[] = n ? [{ text: " " }] : [];
           if (!w.url) return [...gap, { text: w.text, color: muted }];
-          links.push(w.url);
-          return [...gap, { text: w.text, color: classic ? undefined : accent, rId: `rLink${links.length - 1}` }];
+          linkTargets.push(w.url);
+          return [...gap, { text: w.text, color: classic ? undefined : accent, rId: `rLink${linkTargets.length - 1}` }];
         });
         return { text: b.text, size: 10, center: classic, runs };
       }
@@ -458,7 +509,7 @@ export function makeResumeDocx(text: string, template: TemplateId): Promise<Blob
       }
     }
   });
-  return zipDocx(paras, classic ? "Times New Roman" : "Arial", links, DOCX_MARGIN.resume);
+  return zipDocx(paras, classic ? "Times New Roman" : "Arial", linkTargets, DOCX_MARGIN.resume);
 }
 
 export function makeLetterDocx(text: string, template: TemplateId): Promise<Blob> {
