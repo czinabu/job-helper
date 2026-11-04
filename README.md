@@ -11,7 +11,7 @@ You can use it with:
 
 ## Using Rolevisor
 
-1. Open the hosted Rolevisor website at [rolevisorapp.vercel.app](https://rolevisorapp.vercel.app) in your browser. There's nothing to install or deploy, and you don't need a Vercel account.
+1. Open the hosted Rolevisor website at [rolevisor.vercel.app](https://rolevisor.vercel.app) in your browser. There's nothing to install or deploy, and you don't need a Vercel account.
 2. Click **Model settings** at the top right and pick where the AI runs:
    - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (everyone uses their own key, billed to their own Anthropic account), then click **Test connection**.
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
