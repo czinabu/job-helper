@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BUDGET_COST_ESTIMATE,
   BUDGET_MODEL,
@@ -19,6 +19,15 @@ export default function SettingsPage() {
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<TestConnectionResult | null>(null);
   const info = PROVIDERS[settings.provider];
+  // The key is masked with CSS on a plain text input instead of type="password".
+  // A filled password field makes browsers offer "Save password?" whenever you
+  // leave the page, which is wrong for an API key. Browsers without CSS masking
+  // fall back to a password input so the key is never shown in the clear.
+  const [cssMask, setCssMask] = useState(true);
+  const [showKey, setShowKey] = useState(false);
+  useEffect(() => {
+    setCssMask(typeof CSS !== "undefined" && CSS.supports("-webkit-text-security", "disc"));
+  }, []);
 
   function chooseProvider(provider: ProviderId) {
     setSettings(defaultSettings(provider));
@@ -116,15 +125,28 @@ export default function SettingsPage() {
             <label className="mb-1 block text-sm font-medium" htmlFor="apiKey">
               Anthropic API key
             </label>
-            <input
-              id="apiKey"
-              type="password"
-              className="field"
-              value={settings.apiKey}
-              onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
-              placeholder="sk-ant-..."
-              autoComplete="off"
-            />
+            <div className="flex gap-2">
+              <input
+                id="apiKey"
+                name="rolevisor-api-key"
+                type={cssMask || showKey ? "text" : "password"}
+                className={`field ${cssMask && !showKey ? "masked" : ""}`}
+                value={settings.apiKey}
+                onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
+                placeholder="sk-ant-..."
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                data-1p-ignore
+                data-lpignore="true"
+                data-bwignore
+                data-form-type="other"
+              />
+              <button type="button" className="btn-secondary shrink-0" onClick={() => setShowKey(!showKey)}>
+                {showKey ? "Hide" : "Show"}
+              </button>
+            </div>
             <p className="mt-1 text-xs text-muted">
               Get one at{" "}
               <a className="text-accent underline" href="https://console.anthropic.com" target="_blank">
