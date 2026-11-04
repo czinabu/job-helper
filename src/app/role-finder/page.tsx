@@ -67,8 +67,8 @@ export default function RoleFinderPage() {
         </p>
         <p className="mt-2 text-sm text-muted">
           Rolevisor reads your resume and the &ldquo;About you&rdquo; details from the{" "}
-          <Link href="/" className="text-accent underline">
-            home page
+          <Link href="/tailor" className="text-accent underline">
+            Tailor page
           </Link>{" "}
           and suggests roles to look for, what carries over, and what to work on. It doesn&apos;t
           see live listings, so each role comes with search links to the big job boards.
@@ -85,8 +85,8 @@ export default function RoleFinderPage() {
       {loaded && !hasResume && (
         <p className="rounded-md border border-line p-3 text-sm">
           Add your resume on the{" "}
-          <Link href="/" className="text-accent underline">
-            home page
+          <Link href="/tailor" className="text-accent underline">
+            Tailor page
           </Link>{" "}
           first.
         </p>

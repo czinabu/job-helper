@@ -58,7 +58,7 @@ export default function Example() {
           and nothing is sent anywhere.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link href="/" className="btn">
+          <Link href="/tailor" className="btn">
             Try it with your resume
           </Link>
           <Link href="/settings" className="btn-secondary">
@@ -160,7 +160,7 @@ export default function Example() {
 
       <div className="flex flex-wrap items-center gap-3 border-t border-line pt-6">
         <span className="text-sm">Ready to try it on your own resume?</span>
-        <Link href="/" className="btn">
+        <Link href="/tailor" className="btn">
           Tailor my resume
         </Link>
       </div>

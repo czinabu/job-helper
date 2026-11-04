@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/LegalPage";
 
-export const metadata: Metadata = { title: "Terms of use · Rolevisor" };
+export const metadata: Metadata = { title: "Terms of use", alternates: { canonical: "/terms" } };
 
 export default function TermsPage() {
   return (
