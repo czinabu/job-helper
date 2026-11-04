@@ -118,7 +118,7 @@ After that Ollama runs quietly in the background (look for the llama icon in you
 
 ### 3. Allow the Rolevisor website to use Ollama
 
-Ollama only answers websites you've approved, so you need to tell it the Rolevisor site's address. The address is the start of what's in your browser's address bar when you're on Rolevisor, for example `https://job-helper.vercel.app` (no slash at the end). If you skip this, Test connection shows the exact address to use.
+Ollama only answers websites you've approved, so you need to tell it the Rolevisor site's address. The address is the start of what's in your browser's address bar when you're on Rolevisor, for example `https://rolevisorapp.vercel.app` (no slash at the end). If you skip this, Test connection shows the exact address to use.
 
 **On Windows:**
 
@@ -132,7 +132,7 @@ Ollama only answers websites you've approved, so you need to tell it the Rolevis
 1. Open Terminal and run this, with your Rolevisor address in the quotes:
 
    ```
-   launchctl setenv OLLAMA_ORIGINS "https://job-helper.vercel.app"
+   launchctl setenv OLLAMA_ORIGINS "https://rolevisorapp.vercel.app"
    ```
 
 2. Quit Ollama (click the llama icon in the menu bar, then **Quit**) and open it again.
