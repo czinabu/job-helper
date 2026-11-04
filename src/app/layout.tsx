@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 import { NavLinks } from "@/components/NavLinks";
 import "./globals.css";
 
@@ -25,6 +26,18 @@ export default function RootLayout({
           </nav>
         </header>
         <main className="mx-auto max-w-3xl px-4 py-8">{children}</main>
+        <footer className="mx-auto max-w-3xl px-4 pb-8 text-sm text-neutral-500">
+          <a
+            href="https://github.com/czinabu/rolevisor/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            Send feedback or report a problem
+          </a>
+        </footer>
+        {/* Cookie-free page-view analytics only. Never pass resume, job or key data to it. */}
+        <Analytics />
       </body>
     </html>
   );
