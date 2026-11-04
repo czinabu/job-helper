@@ -1,6 +1,6 @@
-# Job Helper
+# Rolevisor
 
-Job Helper reads your resume and a job posting, then helps you tailor your resume for that specific job. It's built for anyone in the middle of a job search, technical or not.
+Rolevisor reads your resume and a job posting, then helps you tailor your resume for that specific job. It's built for anyone in the middle of a job search, technical or not.
 
 You can use it with:
 
@@ -9,9 +9,9 @@ You can use it with:
 
 > **Status:** early. You can add your resume (PDF, Word, or text), your background, and a job posting, then get a tailored resume with a match summary. Suggestions are next.
 
-## Using Job Helper
+## Using Rolevisor
 
-1. Open the hosted Job Helper website in your browser. There's nothing to install or deploy, and you don't need a Vercel account.
+1. Open the hosted Rolevisor website in your browser. There's nothing to install or deploy, and you don't need a Vercel account.
 2. Click **Model settings** at the top right and pick where the AI runs:
    - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (everyone uses their own key, billed to their own Anthropic account), then click **Test connection**.
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
@@ -25,7 +25,7 @@ If something isn't set up right, Test connection tells you what to fix in plain 
 - Your resume, background, and settings are saved only in your own browser.
 - Resume files are read inside your browser. They're never uploaded.
 - With LM Studio or Ollama, your browser talks straight to the model on your computer. Your resume is never sent over the internet.
-- With Claude, your browser sends your resume and API key straight to Anthropic's API. They never pass through the Job Helper server, which stores and logs nothing. The key is kept for the current tab only unless you tick "Remember my key on this device", and "Clear my key" removes it. A Content-Security-Policy (in `next.config.ts`) limits where the page can send data.
+- With Claude, your browser sends your resume and API key straight to Anthropic's API. They never pass through the Rolevisor server, which stores and logs nothing. The key is kept for the current tab only unless you tick "Remember my key on this device", and "Clear my key" removes it. A Content-Security-Policy (in `next.config.ts`) limits where the page can send data.
 
 ## How Claude models are used
 
@@ -38,7 +38,7 @@ Local models use the one model you pick for everything.
 
 ## For maintainers: hosting the site on Vercel
 
-Job Helper runs as one public site on Vercel, deployed from this repository. Regular users just open that site. These steps are for whoever runs it (or anyone who wants a private copy).
+Rolevisor runs as one public site on Vercel, deployed from this repository. Regular users just open that site. These steps are for whoever runs it (or anyone who wants a private copy).
 
 1. Sign in to [vercel.com](https://vercel.com) with GitHub and click **Add New → Project**.
 2. Import this repository. Vercel detects Next.js, so keep the default settings.

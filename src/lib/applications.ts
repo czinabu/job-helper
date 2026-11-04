@@ -154,10 +154,10 @@ export function parseImport(text: string, filename: string): Application[] {
       const data = JSON.parse(text);
       raw = Array.isArray(data) ? data : data?.applications;
     } catch {
-      throw new Error("That doesn't look like a Job Helper export.");
+      throw new Error("That doesn't look like a Rolevisor export.");
     }
   }
-  if (!Array.isArray(raw)) throw new Error("That doesn't look like a Job Helper export.");
+  if (!Array.isArray(raw)) throw new Error("That doesn't look like a Rolevisor export.");
   const apps = raw.map(clean).filter((a): a is Application => !!a);
   if (apps.length === 0) throw new Error("No applications were found in that file.");
   return apps;

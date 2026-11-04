@@ -195,7 +195,7 @@ export default function Home() {
               Education{hasEducation ? "" : " (optional)"}
             </summary>
             <p className="text-sm text-muted">
-              Include school you didn&apos;t finish too. Job Helper will suggest
+              Include school you didn&apos;t finish too. Rolevisor will suggest
               whether to list it, where it goes, and how to word it for each
               job.
             </p>
