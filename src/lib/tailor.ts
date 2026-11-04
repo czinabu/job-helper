@@ -170,7 +170,7 @@ Tailor this resume for the job posting above.`;
 
 // Type-only import of Task keeps tasks.ts -> tailor.ts free of an import cycle.
 export const tailorTask: Task<TailorRequest, TailorResult> = {
-  // Rewriting a whole resume is the app's most demanding task, so it gets Opus.
+  // Rewriting a whole resume is the app's most demanding task, so it gets the main (big-job) model.
   weight: "heavy",
   system: SYSTEM,
   user: userPrompt,

@@ -29,7 +29,7 @@ export const BUDGET_MODEL = "claude-haiku-5-5";
  * Opus 5.5 $4 in / $20 out, Sonnet 5.5 $2 / $10, Haiku 5.5 $0.10 / $0.50.
  */
 export const BUDGET_COST_ESTIMATE = {
-  normal: "about 3 to 6 cents for big jobs, 1 to 3 cents for quick ones",
+  normal: "about 1 to 3 cents for big jobs, under half a cent for quick ones",
   budget: "about a fifth of a cent or less",
 };
 
@@ -53,8 +53,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     description:
       "Best quality. Needs an Anthropic API key, and each request costs a small amount.",
     defaultBaseUrl: "",
-    defaultModel: "claude-opus-5-5",
-    defaultQuickModel: "claude-sonnet-5-5",
+    defaultModel: "claude-sonnet-5-5",
+    defaultQuickModel: "claude-haiku-5-5",
     isLocal: false,
   },
   lmstudio: {
