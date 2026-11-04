@@ -64,7 +64,7 @@ export async function listClaudeModels(settings: ModelSettings): Promise<string[
 
 /**
  * Budget mode runs everything on Haiku. Otherwise only heavy tasks use the
- * main (Opus) model; light ones use the cheaper quick model.
+ * main model; light ones use the cheaper quick model.
  */
 function modelFor(settings: ModelSettings, weight: TaskWeight): string {
   if (settings.budgetMode) return BUDGET_MODEL;
