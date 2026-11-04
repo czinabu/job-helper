@@ -3,9 +3,27 @@ import Link from "next/link";
 import { NavLinks } from "@/components/NavLinks";
 import "./globals.css";
 
+const SITE_URL = "https://rolevisor.vercel.app";
+const DESCRIPTION =
+  "Tailor your resume to any job posting, find matching roles, and draft cover letters, with Claude or a free local model.";
+
 export const metadata: Metadata = {
-  title: "Rolevisor",
-  description: "Tailor your resume to any job posting, with Claude or a free local model.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: "Rolevisor: tailor your resume to any job", template: "%s | Rolevisor" },
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "Rolevisor",
+    url: "/",
+    title: "Rolevisor: tailor your resume to any job",
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rolevisor: tailor your resume to any job",
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
