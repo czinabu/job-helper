@@ -11,11 +11,11 @@ You can use it with:
 
 ## Using Rolevisor
 
-1. Open the hosted Rolevisor website at [rolevisor.vercel.app](https://rolevisor.vercel.app) in your browser. There's nothing to install or deploy, and you don't need a Vercel account.
+1. Open the hosted Rolevisor website at [rolevisor.vercel.app](https://rolevisor.vercel.app) in your browser. There's nothing to install or deploy, and you don't need a Vercel account. The home page explains what Rolevisor does; click **Start tailoring** to open the tool (it lives at `/tailor`).
 2. Click **Model settings** at the top right and pick where the AI runs:
-   - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (everyone uses their own key, billed to their own Anthropic account), then click **Test connection**.
+   - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (everyone uses their own key, billed to their own Anthropic account), then click **Test connection**. New to API keys? The site has a step-by-step guide at [/guide/api-key](https://rolevisor.vercel.app/guide/api-key), with rough costs (tailoring one resume is about 1 to 3 cents on the default models).
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
-3. Go back to the home page, add your resume and the job posting, and click **Tailor my resume**. You get a rewritten resume, a match score, the skills you have and are missing, which of the posting's keywords each version contains, and a list of what changed and why.
+3. Open **Tailor**, add your resume and the job posting, and click **Tailor my resume**. You get a rewritten resume, a match score, the skills you have and are missing, which of the posting's keywords each version contains, and a list of what changed and why.
 4. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
 
 If something isn't set up right, Test connection tells you what to fix in plain English.

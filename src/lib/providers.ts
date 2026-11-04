@@ -28,6 +28,19 @@ export const BUDGET_MODEL = "claude-haiku-5-5";
  * thinking), from Anthropic's per-million-token prices:
  * Opus 5.5 $4 in / $20 out, Sonnet 5.5 $2 / $10, Haiku 5.5 $0.10 / $0.50.
  */
+export const COST_ESTIMATE = {
+  /** One resume tailoring on the default big-jobs model (Sonnet). */
+  tailoring: "about 1 to 3 cents",
+  /** One resume tailoring if the person switches big jobs to Opus. */
+  opusTailoring: "about 3 to 6 cents",
+  /** Tailoring plus cover letter, suggestions, and formatting review, on the defaults. */
+  fullApplication: "about 2 to 5 cents",
+  /** How many default tailorings $5 of credit covers. */
+  perFiveDollars: "roughly 150 to 500",
+  /** One tailoring in Budget mode (Haiku). */
+  budgetTailoring: "a fifth of a cent or less",
+};
+
 export const BUDGET_COST_ESTIMATE = {
   normal: "about 1 to 3 cents for big jobs, under half a cent for quick ones",
   budget: "about a fifth of a cent or less",

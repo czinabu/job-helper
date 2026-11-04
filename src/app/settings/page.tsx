@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   BUDGET_COST_ESTIMATE,
@@ -152,7 +153,10 @@ export default function SettingsPage() {
               <a className="text-accent underline" href="https://console.anthropic.com" target="_blank">
                 console.anthropic.com
               </a>
-              . Everyone uses their own key, and usage is billed to your Anthropic account.
+              . Everyone uses their own key, and usage is billed to your Anthropic account.{" "}
+              <Link className="text-accent underline" href="/guide/api-key">
+                Step-by-step guide
+              </Link>
             </p>
             <label className="mt-3 flex items-start gap-2 text-sm">
               <input
