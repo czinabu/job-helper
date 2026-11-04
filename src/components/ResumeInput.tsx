@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { friendlyMessage } from "@/lib/errors";
 import { readLayout, type ResumeLayout } from "@/lib/layout";
 import { openPdf, parseResume, resumeFileKind } from "@/lib/parseResume";
+import { fillLinksFromFile } from "@/lib/profileLinks";
 import { useStoredState } from "@/lib/useStoredState";
 
 interface Props {
@@ -63,6 +64,7 @@ export function ResumeInput({ text, onChange, onLayout }: Props) {
     try {
       const parsed = await parseResume(chosen);
       onLayout(await readLayout(chosen));
+      await fillLinksFromFile(chosen, parsed);
       setFile(chosen);
       setStored({ fileName: chosen.name });
       setPasting(false);
