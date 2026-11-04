@@ -63,44 +63,49 @@ export function SuggestionsCard({
       {busy && <Loading message="Looking for the changes worth making..." hint="This usually takes under a minute." />}
       {error && <p role="alert" className="whitespace-pre-line text-sm text-bad">{error}</p>}
 
-      {result && (
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <h3 className="font-medium">Bullets to strengthen</h3>
-            {result.bullets.length === 0 && <p className="text-sm text-muted">Nothing needs changing here.</p>}
-            {result.bullets.map((b, i) => (
-              <div key={i} className="space-y-1 rounded-md border border-line p-3 text-sm">
-                <Priority level={b.priority} />
-                <p className="text-muted line-through">{b.original}</p>
-                <p>{b.rewrite}</p>
-                <p className="text-xs text-muted">{b.why}</p>
-              </div>
-            ))}
-          </div>
-          <div className="space-y-3">
-            <h3 className="font-medium">Gaps to address</h3>
-            {result.gaps.length === 0 && <p className="text-sm text-muted">No clear gaps found.</p>}
-            {result.gaps.map((g, i) => (
-              <div key={i} className="space-y-1 rounded-md border border-line p-3 text-sm">
-                <Priority level={g.priority} />
-                <p className="font-medium">{g.gap}</p>
-                <p className="text-muted">{g.howToAddress}</p>
-              </div>
-            ))}
-          </div>
-          <div className="space-y-3">
-            <h3 className="font-medium">What to emphasize</h3>
-            {result.emphasize.length === 0 && <p className="text-sm text-muted">Nothing specific.</p>}
-            {result.emphasize.map((p, i) => (
-              <div key={i} className="space-y-1 rounded-md border border-line p-3 text-sm">
-                <Priority level={p.priority} />
-                <p className="font-medium">{p.point}</p>
-                <p className="text-muted">{p.how}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {result && <SuggestionsList result={result} />}
     </section>
+  );
+}
+
+/** The suggestions themselves, also used by the example page. */
+export function SuggestionsList({ result }: { result: SuggestionsResult }) {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <h3 className="font-medium">Bullets to strengthen</h3>
+        {result.bullets.length === 0 && <p className="text-sm text-muted">Nothing needs changing here.</p>}
+        {result.bullets.map((b, i) => (
+          <div key={i} className="space-y-1 rounded-md border border-line p-3 text-sm">
+            <Priority level={b.priority} />
+            <p className="text-muted line-through">{b.original}</p>
+            <p>{b.rewrite}</p>
+            <p className="text-xs text-muted">{b.why}</p>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-3">
+        <h3 className="font-medium">Gaps to address</h3>
+        {result.gaps.length === 0 && <p className="text-sm text-muted">No clear gaps found.</p>}
+        {result.gaps.map((g, i) => (
+          <div key={i} className="space-y-1 rounded-md border border-line p-3 text-sm">
+            <Priority level={g.priority} />
+            <p className="font-medium">{g.gap}</p>
+            <p className="text-muted">{g.howToAddress}</p>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-3">
+        <h3 className="font-medium">What to emphasize</h3>
+        {result.emphasize.length === 0 && <p className="text-sm text-muted">Nothing specific.</p>}
+        {result.emphasize.map((p, i) => (
+          <div key={i} className="space-y-1 rounded-md border border-line p-3 text-sm">
+            <Priority level={p.priority} />
+            <p className="font-medium">{p.point}</p>
+            <p className="text-muted">{p.how}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
