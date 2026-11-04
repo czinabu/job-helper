@@ -97,7 +97,7 @@ export default function SettingsPage() {
               {settings.provider === "lmstudio" ? "LM Studio" : "Ollama"}. New to this? Follow the{" "}
               <a
                 className="text-accent underline"
-                href="https://github.com/czinabu/job-helper/blob/main/docs/local-models.md"
+                href="https://github.com/czinabu/rolevisor/blob/main/docs/local-models.md"
                 target="_blank"
               >
                 step-by-step setup guide
