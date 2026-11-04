@@ -25,6 +25,16 @@ export default function RootLayout({
           </nav>
         </header>
         <main className="mx-auto max-w-3xl px-4 py-8">{children}</main>
+        <footer className="border-t border-line">
+          <div className="mx-auto flex max-w-3xl flex-wrap gap-x-4 gap-y-1 px-4 py-4 text-sm text-muted">
+            <Link href="/privacy" className="hover:underline">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:underline">
+              Terms
+            </Link>
+          </div>
+        </footer>
       </body>
     </html>
   );
