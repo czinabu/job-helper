@@ -45,6 +45,7 @@ export function TailorResults({
   return (
     <div className="space-y-8">
       <section className="card p-5">
+        <h2 className="mb-2 text-lg font-medium">AI fit score</h2>
         <div className="flex items-baseline gap-3">
           <span className="text-5xl font-semibold tracking-tight">{score}</span>
           <span className="text-sm text-muted">/ 100 · {scoreLabel(score)}</span>
@@ -53,7 +54,10 @@ export function TailorResults({
           <div className="h-full rounded-full bg-accent" style={{ width: `${score}%` }} />
         </div>
         <p className="mt-4 text-sm">{result.summary}</p>
-        <p className="mt-2 text-xs text-muted">This score is for your original resume.</p>
+        <p className="mt-2 text-xs text-muted">
+          This score is for your original resume. The AI reads it for meaning; the Keyword match
+          tab counts the posting&apos;s exact words, the way an applicant tracking system does.
+        </p>
       </section>
 
       <section className="grid gap-6 sm:grid-cols-2">

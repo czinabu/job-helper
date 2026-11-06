@@ -9,7 +9,8 @@ import { checkFormat, describeLayout, type CheckStatus, type FormatReport } from
 import type { FormatReview } from "@/lib/formatReview";
 import type { ResumeLayout } from "@/lib/layout";
 import { adviseLinks } from "@/lib/linkAdvice";
-import type { ModelSettings } from "@/lib/providers";
+import { FreeBadge, NoModel } from "@/components/FreeLabel";
+import { needsModel, type ModelSettings } from "@/lib/providers";
 
 const ICON: Record<CheckStatus, string> = { pass: "✓", warn: "!", fail: "✕" };
 const TONE: Record<CheckStatus, string> = {
@@ -71,7 +72,8 @@ export function FormatCard({
       <LinkPrompt resume={resume} advice={linkAdvice} />
 
       <div className="space-y-3 border-t border-line pt-4">
-        {!review && (
+        {!review && needsModel(settings) && <NoModel feature="The expert-style review" compact />}
+        {!review && !needsModel(settings) && (
           <div className="flex flex-wrap items-center gap-3">
             <button className="btn-secondary" disabled={busy} onClick={ask}>
               {busy ? "Reviewing..." : "Get an expert-style review"}
@@ -95,8 +97,9 @@ export function FormatChecks({ report }: { report: FormatReport }) {
   const checks = [...report.checks].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
   return (
     <>
-      <div className="flex items-baseline gap-3">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h2 className="text-lg font-medium">Formatting and spacing</h2>
+        <FreeBadge />
         <span className="ml-auto text-3xl font-semibold">{report.score}</span>
         <span className="text-sm text-muted">/ 100{report.textOnly && " (text only)"}</span>
       </div>

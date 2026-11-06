@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FreeBadge, KeyBadge } from "@/components/FreeLabel";
 import { COST_ESTIMATE } from "@/lib/providers";
 
 /** Where the "See an example" button goes. Set to null to hide the button. */
@@ -10,26 +11,37 @@ const LOCAL_GUIDE =
 
 const FEATURES = [
   {
+    free: false,
     title: "A resume tailored to the posting",
     body: "Paste a job posting and get your resume rewritten for it, with a match score, the skills you have and are missing, and a list of what changed and why.",
   },
   {
+    free: false,
     title: "Keyword check",
     body: "See which of the posting's keywords your original and tailored resumes contain, so applicant tracking systems don't filter you out.",
   },
   {
+    free: false,
     title: "Cover letters",
     body: "Get a cover letter written for the specific job, based on your real experience, ready to edit and download.",
   },
   {
+    free: false,
     title: "Advice for this application",
-    body: "Suggestions on what to strengthen, how to list your education, and formatting problems that could trip up a reader or a scanner.",
+    body: "Suggestions on what to strengthen, how to list your education, and an expert-style read of your formatting.",
   },
   {
+    free: true,
+    title: "Formatting score",
+    body: "A score out of 100 for margins, fonts, spacing, sections, and contact details, measured in your browser from your PDF or Word file.",
+  },
+  {
+    free: false,
     title: "Role finder",
     body: "Not sure what to apply for? Get roles that fit your background, what carries over, and links to search for them on the big job boards.",
   },
   {
+    free: true,
     title: "Application log",
     body: "Keep track of where you applied and which version of your resume you sent, all saved in your own browser.",
   },
@@ -85,11 +97,17 @@ export default function Landing() {
       </section>
 
       <section className="space-y-8">
-        <SectionTitle title="What it does" />
+        <SectionTitle title="What it does">
+          Parts marked free work right away, with no API key or local model. Rolevisor also reads
+          PDF and Word resumes and job posting screenshots for free, in your browser.
+        </SectionTitle>
         <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
           {FEATURES.map((f) => (
             <div key={f.title} className="border-t border-line pt-4">
-              <h3 className="font-medium">{f.title}</h3>
+              <h3 className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium">
+                {f.title}
+                {f.free ? <FreeBadge /> : <KeyBadge />}
+              </h3>
               <p className="mt-1 text-sm leading-relaxed text-muted">{f.body}</p>
             </div>
           ))}

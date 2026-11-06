@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Loading } from "@/components/Loading";
 import { runTask } from "@/lib/ai";
 import { friendlyMessage } from "@/lib/errors";
-import type { ModelSettings } from "@/lib/providers";
+import { NoModel } from "@/components/FreeLabel";
+import { needsModel, type ModelSettings } from "@/lib/providers";
 import type { SuggestionsResult } from "@/lib/suggestions";
 import type { Background } from "@/lib/tailor";
 
@@ -57,9 +58,13 @@ export function SuggestionsCard({
         The changes most worth making first: bullets to strengthen, gaps to address, and what to
         emphasize. Rewrites only use what you&apos;ve told Rolevisor.
       </p>
-      <button className="btn" disabled={busy} onClick={run}>
-        {busy ? "Thinking..." : result ? "Refresh suggestions" : "Get suggestions"}
-      </button>
+      {needsModel(settings) ? (
+        <NoModel feature="Written suggestions" compact />
+      ) : (
+        <button className="btn" disabled={busy} onClick={run}>
+          {busy ? "Thinking..." : result ? "Refresh suggestions" : "Get suggestions"}
+        </button>
+      )}
       {busy && <Loading message="Looking for the changes worth making..." hint="This usually takes under a minute." />}
       {error && <p role="alert" className="whitespace-pre-line text-sm text-bad">{error}</p>}
 

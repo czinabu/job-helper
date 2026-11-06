@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { BulletCheckCard } from "@/components/BulletCheckCard";
 import { DownloadPanel } from "@/components/DownloadPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { Tabs } from "@/components/Tabs";
+import { KeywordMatchCard } from "@/components/KeywordMatchCard";
 import { FormatChecks, FormatReviewView } from "@/components/FormatCard";
 import { SuggestionsList } from "@/components/SuggestionsCard";
 import { TailorResults } from "@/components/TailorResults";
@@ -21,6 +23,7 @@ import { EDUCATION_STATUSES } from "@/lib/tailor";
 
 const TABS = [
   { id: "tailor", label: "Tailored resume" },
+  { id: "keywords", label: "Keyword match" },
   { id: "suggestions", label: "Suggestions" },
   { id: "format", label: "Formatting" },
   { id: "letter", label: "Cover letter" },
@@ -103,6 +106,14 @@ export default function Example() {
           <TailorResults result={EXAMPLE_TAILORED} originalResume={EXAMPLE_INPUTS.resume} />
         </div>
 
+        <div role="tabpanel" id="panel-keywords" aria-labelledby="tab-keywords" hidden={tab !== "keywords"}>
+          <KeywordMatchCard
+            resume={EXAMPLE_INPUTS.resume}
+            jobPosting={EXAMPLE_INPUTS.jobPosting}
+            background={EXAMPLE_INPUTS.background}
+          />
+        </div>
+
         <div role="tabpanel" id="panel-suggestions" aria-labelledby="tab-suggestions" hidden={tab !== "suggestions"}>
           <section className="space-y-4 card p-5">
             <h2 className="text-lg font-medium">Suggestions for this job</h2>
@@ -126,6 +137,13 @@ export default function Example() {
               <FormatReviewView review={EXAMPLE_FORMAT_REVIEW} />
             </div>
           </section>
+          <div className="mt-4">
+            <BulletCheckCard
+              resume={EXAMPLE_INPUTS.resume}
+              jobPosting={EXAMPLE_INPUTS.jobPosting}
+              background={EXAMPLE_INPUTS.background}
+            />
+          </div>
         </div>
 
         <div role="tabpanel" id="panel-letter" aria-labelledby="tab-letter" hidden={tab !== "letter"}>
