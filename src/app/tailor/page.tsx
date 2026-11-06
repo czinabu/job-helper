@@ -14,7 +14,8 @@ import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
 import type { ResumeLayout } from "@/lib/layout";
 import { runTask } from "@/lib/ai";
-import { PROVIDERS } from "@/lib/providers";
+import { FREE_FEATURES, needsModel, PROVIDERS } from "@/lib/providers";
+import { NoModel } from "@/components/FreeLabel";
 import { friendlyMessage } from "@/lib/errors";
 import {
   EDUCATION_STATUSES,
@@ -56,6 +57,11 @@ const TABS = [
   { id: "letter", label: "Cover letter" },
 ] as const;
 
+type TabId = (typeof TABS)[number]["id"];
+
+/** Tabs whose results come from plain code in the browser, with no model. */
+const FREE_TABS: readonly TabId[] = ["format"];
+
 function Empty({ children }: { children: React.ReactNode }) {
   return (
     <p className="rounded-xl border border-dashed border-line bg-card/50 p-8 text-center text-sm text-muted">
@@ -65,12 +71,14 @@ function Empty({ children }: { children: React.ReactNode }) {
 }
 
 export default function TailorPage() {
-  const { settings } = useSettings();
+  const { settings, loaded } = useSettings();
+  // Wait for the saved settings before deciding, so a saved key doesn't flash the no-key view.
+  const noModel = loaded && needsModel(settings);
   const [inputs, setInputs] = useStoredState<Inputs>(
     "job-helper:inputs",
     EMPTY,
   );
-  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("tailor");
+  const [tab, setTab] = useState<TabId>("tailor");
   const [tailoring, setTailoring] = useState(false);
   const [tailorError, setTailorError] = useState("");
   // Measured from the uploaded file. Kept in storage so it survives switching pages.
@@ -96,7 +104,22 @@ export default function TailorPage() {
       education: schools.map((s, i) => (i === index ? { ...s, ...patch } : s)),
     });
 
+  function showResults(next: TabId) {
+    setTab(next);
+    setTimeout(() =>
+      document
+        .getElementById("results")
+        ?.scrollIntoView({ behavior: "smooth" }),
+    );
+  }
+
   async function tailor() {
+    // With no model, the button shows the free results instead of failing.
+    if (noModel) {
+      setTailorError("");
+      showResults("format");
+      return;
+    }
     setTailoring(true);
     setTailorError("");
     setTailored(null);
@@ -105,12 +128,7 @@ export default function TailorPage() {
     try {
       const result = await runTask<TailorResult>(settings, "tailor", inputs);
       setTailored({ result, resume: inputs.resume });
-      setTab("tailor");
-      setTimeout(() =>
-        document
-          .getElementById("results")
-          ?.scrollIntoView({ behavior: "smooth" }),
-      );
+      showResults("tailor");
     } catch (error) {
       setTailorError(friendlyMessage(error));
     } finally {
@@ -122,6 +140,12 @@ export default function TailorPage() {
     Object.values(s).some((v) => String(v).trim()),
   );
   const ready = inputs.resume.trim() && inputs.jobPosting.trim();
+  // The free checks only need the resume.
+  const canRun = noModel ? !!inputs.resume.trim() : !!ready;
+  const tabs = TABS.map((t) => ({
+    ...t,
+    note: FREE_TABS.includes(t.id) ? "Free" : noModel ? "Needs a key" : undefined,
+  }));
 
   return (
     <div className="space-y-10">
@@ -132,22 +156,45 @@ export default function TailorPage() {
             in this browser until you ask for help.
           </p>
         </PageHeader>
-        <div className="card flex flex-col gap-3 bg-card p-4 text-sm sm:flex-row sm:items-center">
-          <span className="flex-1">
-            Not sure what you&apos;ll get? See full results for a sample resume first. No API key
-            needed.
-          </span>
-          <Link href="/example" className="btn-secondary">
-            See an example
-          </Link>
-        </div>
-        <p className="text-xs text-muted">
-          Using: {PROVIDERS[settings.provider].label}
-          {settings.model ? `, ${settings.model}` : ""} ·{" "}
-          <Link href="/settings" className="link">
-            change
-          </Link>
-        </p>
+        {!noModel && (
+          <div className="card flex flex-col gap-3 bg-card p-4 text-sm sm:flex-row sm:items-center">
+            <span className="flex-1">
+              Not sure what you&apos;ll get? See full results for a sample resume first. No API key
+              needed.
+            </span>
+            <Link href="/example" className="btn-secondary">
+              See an example
+            </Link>
+          </div>
+        )}
+        {noModel ? (
+          <div className="card space-y-3 bg-card p-4 text-sm">
+            <p className="font-medium">No AI model set up yet. You can still use the free parts.</p>
+            <ul className="list-disc space-y-0.5 pl-5 text-muted">
+              {FREE_FEATURES.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+            <p className="text-muted">
+              For the tailored resume, suggestions, and cover letter,{" "}
+              <Link href="/settings" className="link">
+                add a Claude API key
+              </Link>{" "}
+              or connect LM Studio or Ollama in Model settings.
+            </p>
+            <Link href="/example" className="btn-secondary">
+              See full results for a sample resume
+            </Link>
+          </div>
+        ) : (
+          <p className="text-xs text-muted">
+            Using: {PROVIDERS[settings.provider].label}
+            {settings.model ? `, ${settings.model}` : ""} ·{" "}
+            <Link href="/settings" className="link">
+              change
+            </Link>
+          </p>
+        )}
       </div>
 
       <div className="space-y-5">
@@ -298,14 +345,20 @@ export default function TailorPage() {
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <button
             className="btn px-5 py-2.5 text-base"
-            disabled={!ready || tailoring}
+            disabled={!canRun || tailoring}
             onClick={tailor}
           >
-            {tailoring ? "Tailoring..." : "Tailor my resume"}
+            {tailoring
+              ? "Tailoring..."
+              : noModel
+                ? "Check my resume for free"
+                : "Tailor my resume"}
           </button>
-          {!ready && !tailoring && (
+          {!canRun && !tailoring && (
             <span className="text-sm text-muted">
-              Add your resume and a job posting to continue.
+              {noModel
+                ? "Add your resume to run the free checks."
+                : "Add your resume and a job posting to continue."}
             </span>
           )}
           <button
@@ -348,7 +401,7 @@ export default function TailorPage() {
           </span>
           See your results
         </h2>
-        <Tabs tabs={TABS} value={tab} onChange={setTab} label="Results" />
+        <Tabs tabs={tabs} value={tab} onChange={setTab} label="Results" />
 
         <div
           role="tabpanel"
@@ -435,6 +488,8 @@ export default function TailorPage() {
                 )}
               </div>
             </>
+          ) : noModel ? (
+            <NoModel feature="The tailored resume" />
           ) : (
             <Empty>
               {tailoring
@@ -450,7 +505,9 @@ export default function TailorPage() {
           aria-labelledby="tab-suggestions"
           hidden={tab !== "suggestions"}
         >
-          {ready ? (
+          {noModel ? (
+            <NoModel feature="Written suggestions" />
+          ) : ready ? (
             <SuggestionsCard
               resume={inputs.resume}
               background={inputs.background}
@@ -494,7 +551,9 @@ export default function TailorPage() {
           aria-labelledby="tab-letter"
           hidden={tab !== "letter"}
         >
-          {ready ? (
+          {noModel ? (
+            <NoModel feature="Writing a cover letter" />
+          ) : ready ? (
             <CoverLetterCard
               resume={inputs.resume}
               background={inputs.background}

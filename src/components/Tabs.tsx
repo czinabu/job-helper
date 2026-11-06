@@ -5,7 +5,7 @@ export function Tabs<T extends string>({
   onChange,
   label,
 }: {
-  tabs: readonly { id: T; label: string }[];
+  tabs: readonly { id: T; label: string; note?: string }[];
   value: T;
   onChange: (id: T) => void;
   label: string;
@@ -27,6 +27,7 @@ export function Tabs<T extends string>({
           }`}
         >
           {t.label}
+          {t.note && <span className="ml-1.5 text-xs font-normal text-muted">{t.note}</span>}
         </button>
       ))}
     </div>

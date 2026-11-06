@@ -8,7 +8,8 @@ import { runTask } from "@/lib/ai";
 import { addApplication, newApplication } from "@/lib/applications";
 import { friendlyMessage } from "@/lib/errors";
 import { searchLinks, type RecommendResult } from "@/lib/recommend";
-import { PROVIDERS } from "@/lib/providers";
+import { needsModel, PROVIDERS } from "@/lib/providers";
+import { KeyBadge, NoModel } from "@/components/FreeLabel";
 import type { TailorRequest } from "@/lib/tailor";
 import { useSettings } from "@/lib/useSettings";
 import { useStoredState } from "@/lib/useStoredState";
@@ -20,7 +21,8 @@ const EMPTY: TailorRequest = {
 };
 
 export default function RoleFinderPage() {
-  const { settings } = useSettings();
+  const { settings, loaded: settingsLoaded } = useSettings();
+  const noModel = settingsLoaded && needsModel(settings);
   // The same saved resume and "About you" details the home page uses.
   const [inputs, , loaded] = useStoredState<TailorRequest>("job-helper:inputs", EMPTY);
   const [location, setLocation] = useStoredState("job-helper:location", { value: "" });
@@ -76,6 +78,7 @@ export default function RoleFinderPage() {
           </p>
         </PageHeader>
         <p className="text-xs text-muted">
+          <KeyBadge className="mr-2" />
           Using: {PROVIDERS[settings.provider].label}
           {settings.model ? `, ${settings.model}` : ""} ·{" "}
           <Link href="/settings" className="link">
@@ -101,10 +104,12 @@ export default function RoleFinderPage() {
           value={location.value}
           onChange={(e) => setLocation({ value: e.target.value })}
         />
-        <button className="btn" disabled={!hasResume || busy} onClick={find}>
+        <button className="btn" disabled={!hasResume || busy || noModel} onClick={find}>
           {busy ? "Looking..." : "Suggest roles"}
         </button>
       </div>
+
+      {noModel && <NoModel feature="Role finder" />}
 
       {busy && <Loading message="Finding roles that fit you..." hint="This usually takes under a minute." />}
 
