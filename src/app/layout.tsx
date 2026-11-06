@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
+import { Inter } from "next/font/google";
+import { LogoMark } from "@/components/Logo";
 import { NavLinks } from "@/components/NavLinks";
 import "./globals.css";
+
+// Self-hosted by Next.js at build time, so it stays within the font-src 'self' policy.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 const SITE_URL = "https://rolevisor.vercel.app";
 const DESCRIPTION =
@@ -33,33 +38,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        <header className="border-b border-line">
-          <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-2 px-4 pt-4">
-            <Link href="/" className="text-lg font-semibold">
+    <html lang="en" className={inter.variable}>
+      <body className="flex min-h-screen flex-col antialiased">
+        <header className="sticky top-0 z-20 border-b border-line bg-background/80 backdrop-blur-md">
+          <nav className="mx-auto flex max-w-3xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
+              <LogoMark />
               Rolevisor
             </Link>
             <NavLinks />
           </nav>
         </header>
-        <main className="mx-auto max-w-3xl px-4 py-8">{children}</main>
+        <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">{children}</main>
         <footer className="border-t border-line">
-          <div className="mx-auto flex max-w-3xl flex-wrap gap-x-4 gap-y-1 px-4 py-4 text-sm text-muted">
-            <Link href="/privacy" className="hover:underline">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:underline">
-              Terms
-            </Link>
-            <a
-              href="https://github.com/czinabu/rolevisor/issues/new"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              Send feedback or report a problem
-            </a>
+          <div className="mx-auto flex max-w-3xl flex-col gap-3 px-4 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+            <p className="flex items-center gap-2">
+              <LogoMark className="h-5 w-5" />
+              <span>Rolevisor. Your resume stays in your browser.</span>
+            </p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <Link href="/privacy" className="hover:text-foreground">
+                Privacy
+              </Link>
+              <Link href="/terms" className="hover:text-foreground">
+                Terms
+              </Link>
+              <a
+                href="https://github.com/czinabu/rolevisor/issues/new"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground"
+              >
+                Send feedback or report a problem
+              </a>
+            </div>
           </div>
         </footer>
         {/* Cookie-free page-view analytics only. Never pass resume, job or key data to it. */}

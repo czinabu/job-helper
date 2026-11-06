@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/PageHeader";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -58,20 +59,21 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Model settings</h1>
-        <p className="mt-1 text-sm text-muted">
+      <PageHeader eyebrow="Settings" title="Model settings">
+        <p>
           Choose which AI model reads your resume. Your settings are saved only in this browser. Nothing you enter here is sent to Rolevisor&apos;s server.
         </p>
-      </div>
+      </PageHeader>
 
       <fieldset className="space-y-3">
         <legend className="mb-2 text-sm font-medium">Where should the AI run?</legend>
         {Object.values(PROVIDERS).map((p) => (
           <label
             key={p.id}
-            className={`flex cursor-pointer gap-3 rounded-lg border p-4 ${
-              settings.provider === p.id ? "border-accent bg-card" : "border-line"
+            className={`flex cursor-pointer gap-3 rounded-xl border p-4 transition ${
+              settings.provider === p.id
+                ? "border-accent bg-accent-soft ring-3 ring-accent/10"
+                : "border-line bg-card hover:border-muted/40"
             }`}
           >
             <input
@@ -106,7 +108,7 @@ export default function SettingsPage() {
               The default ({info.defaultBaseUrl}) works unless you changed it in{" "}
               {settings.provider === "lmstudio" ? "LM Studio" : "Ollama"}. New to this? Follow the{" "}
               <a
-                className="text-accent underline"
+                className="link"
                 href="https://github.com/czinabu/rolevisor/blob/main/docs/local-models.md"
                 target="_blank"
               >
@@ -150,11 +152,11 @@ export default function SettingsPage() {
             </div>
             <p className="mt-1 text-xs text-muted">
               Get one at{" "}
-              <a className="text-accent underline" href="https://console.anthropic.com" target="_blank">
+              <a className="link" href="https://console.anthropic.com" target="_blank">
                 console.anthropic.com
               </a>
               . Everyone uses their own key, and usage is billed to your Anthropic account.{" "}
-              <Link className="text-accent underline" href="/guide/api-key">
+              <Link className="link" href="/guide/api-key">
                 Step-by-step guide
               </Link>
             </p>
@@ -178,7 +180,7 @@ export default function SettingsPage() {
                 Clear my key
               </button>
             )}
-            <div className="mt-3 rounded-lg border border-line bg-card p-3 text-xs text-muted">
+            <div className="mt-3 card p-3 text-xs text-muted">
               <p className="font-medium text-foreground">Your key and your privacy</p>
               <p className="mt-1">
                 Your key and resume go straight from your browser to Anthropic. They never pass
@@ -193,7 +195,7 @@ export default function SettingsPage() {
         {info.isLocal && <ModelAdvisor provider={settings.provider} />}
 
         {!info.isLocal && (
-          <div className="rounded-lg border border-line bg-card p-4">
+          <div className="card p-4">
             <label className="flex items-start gap-2 text-sm">
               <input
                 type="checkbox"
@@ -251,8 +253,8 @@ export default function SettingsPage() {
         {result && (
           <p
             role="status"
-            className={`whitespace-pre-line rounded-md border p-3 text-sm ${
-              result.ok ? "border-good text-good" : "border-bad text-bad"
+            className={`whitespace-pre-line rounded-lg border p-3 text-sm ${
+              result.ok ? "border-good/40 bg-good-soft text-good" : "border-bad/40 bg-bad-soft text-bad"
             }`}
           >
             {result.message}
@@ -268,7 +270,7 @@ function ModelAdvisor({ provider }: { provider: ProviderId }) {
   const pick = COMPUTER_TYPES.find((c) => c.id === computer.id);
 
   return (
-    <div className="rounded-lg border border-line bg-card p-4">
+    <div className="card p-4">
       <label className="mb-1 block text-sm font-medium" htmlFor="computer">
         Which model fits my computer?
       </label>

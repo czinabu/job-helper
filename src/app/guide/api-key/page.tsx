@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/PageHeader";
 import Link from "next/link";
 import { COST_ESTIMATE } from "@/lib/providers";
 
@@ -22,7 +23,7 @@ function Step({
 }) {
   return (
     <li className="flex gap-4">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-white dark:text-black">
+      <span className="step-dot h-8 w-8">
         {n}
       </span>
       <div className="space-y-2 pt-1">
@@ -38,20 +39,23 @@ export default function ApiKeyGuide() {
     <div className="space-y-10">
       <div>
         <p className="text-sm">
-          <Link href="/" className="text-accent underline">
+          <Link href="/" className="link">
             Rolevisor
           </Link>{" "}
           <span className="text-muted">/ Guide</span>
         </p>
-        <h1 className="mt-2 text-2xl font-semibold">How to get a Claude API key</h1>
-        <p className="mt-2 text-sm text-muted">
-          About 5 minutes. You need an email address and a payment card. An API key is a
-          password that lets Rolevisor use Claude on your behalf, billed to your own Anthropic
-          account. Rolevisor never sees your bill or charges you anything.
-        </p>
+        <div className="mt-3">
+          <PageHeader title="How to get a Claude API key">
+            <p>
+              About 5 minutes. You need an email address and a payment card. An API key is a
+              password that lets Rolevisor use Claude on your behalf, billed to your own Anthropic
+              account. Rolevisor never sees your bill or charges you anything.
+            </p>
+          </PageHeader>
+        </div>
       </div>
 
-      <div className="rounded-lg border border-line bg-card p-4 text-sm">
+      <div className="card border-accent/30 bg-accent-soft p-4 text-sm">
         <p className="font-medium">Already pay for Claude Pro or Max?</p>
         <p className="mt-1 text-muted">
           That subscription covers the Claude app, not the API. The API is billed separately, pay
@@ -63,7 +67,7 @@ export default function ApiKeyGuide() {
         <Step n={1} title="Create an Anthropic account">
           <p>
             Go to{" "}
-            <a className="text-accent underline" href={CONSOLE} target="_blank" rel="noreferrer">
+            <a className="link" href={CONSOLE} target="_blank" rel="noreferrer">
               console.anthropic.com
             </a>{" "}
             and sign up with your email or Google account. This is Anthropic&apos;s developer
@@ -108,12 +112,12 @@ export default function ApiKeyGuide() {
         <Step n={5} title="Paste it into Rolevisor">
           <p>
             Open{" "}
-            <Link href="/settings" className="text-accent underline">
+            <Link href="/settings" className="link">
               Model settings
             </Link>
             , choose Claude, paste the key, and click{" "}
             <strong className="text-foreground">Test connection</strong>. Then head to{" "}
-            <Link href="/tailor" className="text-accent underline">
+            <Link href="/tailor" className="link">
               Tailor
             </Link>{" "}
             and you&apos;re ready.
@@ -193,13 +197,13 @@ export default function ApiKeyGuide() {
         </ul>
       </section>
 
-      <section className="rounded-lg border border-line p-5 text-sm">
+      <section className="card p-5 text-sm">
         <p className="font-medium">Rather not pay anything?</p>
         <p className="mt-1 text-muted">
           Rolevisor also works with a free model running on your own computer through LM Studio
           or Ollama. See the{" "}
           <a
-            className="text-accent underline"
+            className="link"
             href="https://github.com/czinabu/rolevisor/blob/main/docs/local-models.md"
             target="_blank"
             rel="noreferrer"

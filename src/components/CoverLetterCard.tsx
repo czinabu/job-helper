@@ -71,7 +71,7 @@ export function CoverLetterCard({
   }
 
   return (
-    <section className="space-y-4 rounded-lg border border-line bg-card p-5">
+    <section className="space-y-4 card p-5">
       <h2 className="text-lg font-medium">Cover letter</h2>
       <p className="text-sm text-muted">
         Written from your resume, your About you details, and the job posting. It only uses what

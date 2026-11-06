@@ -55,7 +55,7 @@ export function FormatCard({
   }
 
   return (
-    <section className="space-y-4 rounded-lg border border-line bg-card p-5">
+    <section className="space-y-4 card p-5">
       <FormatChecks report={report} />
 
       <div className="space-y-3 border-t border-line pt-4">

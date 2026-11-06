@@ -9,14 +9,14 @@ import type { SuggestionsResult } from "@/lib/suggestions";
 import type { Background } from "@/lib/tailor";
 
 const BADGE: Record<string, string> = {
-  High: "text-bad border-bad",
-  Medium: "text-accent border-accent",
-  Low: "text-muted border-line",
+  High: "text-bad bg-bad-soft",
+  Medium: "text-accent bg-accent-soft",
+  Low: "text-muted bg-background",
 };
 
 function Priority({ level }: { level: string }) {
   return (
-    <span className={`rounded border px-1.5 py-0.5 text-xs font-medium ${BADGE[level] ?? BADGE.Low}`}>
+    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${BADGE[level] ?? BADGE.Low}`}>
       {level}
     </span>
   );
@@ -51,7 +51,7 @@ export function SuggestionsCard({
   }
 
   return (
-    <section className="space-y-4 rounded-lg border border-line bg-card p-5">
+    <section className="space-y-4 card p-5">
       <h2 className="text-lg font-medium">Suggestions for this job</h2>
       <p className="text-sm text-muted">
         The changes most worth making first: bullets to strengthen, gaps to address, and what to

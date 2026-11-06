@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/PageHeader";
 import { Loading } from "@/components/Loading";
 import Link from "next/link";
 import { useState } from "react";
@@ -60,41 +61,42 @@ export default function RoleFinderPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Role finder</h1>
-        <p className="mt-1 text-sm font-medium">
-          Suggests roles that fit your background and links to job searches. It doesn&apos;t list live openings.
-        </p>
-        <p className="mt-2 text-sm text-muted">
+      <div className="space-y-4">
+        <PageHeader eyebrow="Role finder" title="Find roles that fit you">
+          <p className="font-medium text-foreground">
+            Suggests roles that fit your background and links to job searches. It doesn&apos;t list live openings.
+          </p>
+          <p>
           Rolevisor reads your resume and the &ldquo;About you&rdquo; details from the{" "}
-          <Link href="/tailor" className="text-accent underline">
+          <Link href="/tailor" className="link">
             Tailor page
           </Link>{" "}
           and suggests roles to look for, what carries over, and what to work on. It doesn&apos;t
           see live listings, so each role comes with search links to the big job boards.
-        </p>
-        <p className="mt-2 text-xs text-muted">
+          </p>
+        </PageHeader>
+        <p className="text-xs text-muted">
           Using: {PROVIDERS[settings.provider].label}
           {settings.model ? `, ${settings.model}` : ""} ·{" "}
-          <Link href="/settings" className="text-accent underline">
+          <Link href="/settings" className="link">
             change
           </Link>
         </p>
       </div>
 
       {loaded && !hasResume && (
-        <p className="rounded-md border border-line p-3 text-sm">
+        <p className="rounded-lg border border-accent/30 bg-accent-soft p-3 text-sm">
           Add your resume on the{" "}
-          <Link href="/tailor" className="text-accent underline">
+          <Link href="/tailor" className="link">
             Tailor page
           </Link>{" "}
           first.
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
         <input
-          className="field w-auto flex-1"
+          className="field flex-1"
           placeholder="Where? e.g. Columbus, OH or Remote (optional)"
           value={location.value}
           onChange={(e) => setLocation({ value: e.target.value })}
@@ -107,7 +109,7 @@ export default function RoleFinderPage() {
       {busy && <Loading message="Finding roles that fit you..." hint="This usually takes under a minute." />}
 
       {error && (
-        <p role="alert" className="whitespace-pre-line rounded-md border border-bad p-3 text-sm text-bad">
+        <p role="alert" className="whitespace-pre-line rounded-lg border border-bad/40 bg-bad-soft p-3 text-sm text-bad">
           {error}
         </p>
       )}
@@ -116,10 +118,10 @@ export default function RoleFinderPage() {
         <div className="space-y-6">
           <p className="text-sm">{result.summary}</p>
           {result.roles.map((role) => (
-            <section key={role.title} className="space-y-3 rounded-lg border border-line bg-card p-5">
+            <section key={role.title} className="space-y-3 card p-5">
               <div className="flex flex-wrap items-baseline gap-3">
-                <h2 className="text-lg font-medium">{role.title}</h2>
-                <span className="text-sm text-muted">{role.fit}</span>
+                <h2 className="text-lg font-semibold tracking-tight">{role.title}</h2>
+                <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">{role.fit}</span>
               </div>
               <p className="text-sm">{role.whyItFits}</p>
               {role.transferableSkills.length > 0 && (
@@ -141,13 +143,13 @@ export default function RoleFinderPage() {
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 <span className="text-muted">Search on</span>
                 {searchLinks(role.searchTerms || role.title, location.value).map((l) => (
-                  <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer" className="text-accent underline">
+                  <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer" className="link">
                     {l.name}
                   </a>
                 ))}
                 <span className="ml-auto">
                   {saved.has(role.title) ? (
-                    <Link href="/applications" className="text-accent underline">
+                    <Link href="/applications" className="link">
                       Saved to log
                     </Link>
                   ) : (

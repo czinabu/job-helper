@@ -6,7 +6,9 @@ import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
 import { Loading } from "@/components/Loading";
 import { JobPostingInput } from "@/components/JobPostingInput";
+import { PageHeader } from "@/components/PageHeader";
 import { SuggestionsCard } from "@/components/SuggestionsCard";
+import { Tabs } from "@/components/Tabs";
 import { ResumeInput } from "@/components/ResumeInput";
 import { TailorResults } from "@/components/TailorResults";
 import type { ResumeLayout } from "@/lib/layout";
@@ -55,7 +57,7 @@ const TABS = [
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted">
+    <p className="rounded-xl border border-dashed border-line bg-card/50 p-8 text-center text-sm text-muted">
       {children}
     </p>
   );
@@ -122,13 +124,14 @@ export default function TailorPage() {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold">Tailor your resume to a job</h1>
-        <p className="mt-1 text-sm text-muted">
-          Two steps: add your details, then see your results. Everything stays
-          in this browser until you ask for help.
-        </p>
-        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-line bg-card p-3 text-sm">
+      <div className="space-y-4">
+        <PageHeader eyebrow="Tailor" title="Tailor your resume to a job">
+          <p>
+            Two steps: add your details, then see your results. Everything stays
+            in this browser until you ask for help.
+          </p>
+        </PageHeader>
+        <div className="card flex flex-col gap-3 border-accent/30 bg-accent-soft p-4 text-sm sm:flex-row sm:items-center">
           <span className="flex-1">
             Not sure what you&apos;ll get? See full results for a sample resume first. No API key
             needed.
@@ -137,25 +140,25 @@ export default function TailorPage() {
             See an example
           </Link>
         </div>
-        <p className="mt-2 text-xs text-muted">
+        <p className="text-xs text-muted">
           Using: {PROVIDERS[settings.provider].label}
           {settings.model ? `, ${settings.model}` : ""} ·{" "}
-          <Link href="/settings" className="text-accent underline">
+          <Link href="/settings" className="link">
             change
           </Link>
         </p>
       </div>
 
-      <div className="space-y-8">
-        <h2 className="flex items-center gap-2 text-xl font-semibold">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm text-white dark:text-black">
+      <div className="space-y-5">
+        <h2 className="flex items-center gap-3 text-xl font-semibold tracking-tight">
+          <span className="step-dot">
             1
           </span>
           Add your details
         </h2>
 
-        <section className="space-y-3">
-          <h3 className="text-lg font-medium">Your resume</h3>
+        <section className="card space-y-3 p-5">
+          <h3 className="font-semibold">Your resume</h3>
           <ResumeInput
             text={inputs.resume}
             onChange={(resume) => setInputs({ ...inputs, resume })}
@@ -163,8 +166,8 @@ export default function TailorPage() {
           />
         </section>
 
-        <section className="space-y-3">
-          <h3 className="text-lg font-medium">About you (optional)</h3>
+        <section className="card space-y-3 p-5">
+          <h3 className="font-semibold">About you (optional)</h3>
           <p className="text-sm text-muted">
             Anything that isn&apos;t on your resume but helps explain your
             story.
@@ -197,7 +200,7 @@ export default function TailorPage() {
           />
 
           <details
-            className="space-y-3 rounded-md border border-line p-3"
+            className="space-y-3 rounded-lg border border-line bg-background/60 p-3"
             open={hasEducation}
           >
             <summary className="cursor-pointer text-sm font-medium">
@@ -211,7 +214,7 @@ export default function TailorPage() {
             {schools.map((school, i) => (
               <div
                 key={i}
-                className="space-y-3 rounded-md border border-line p-3"
+                className="space-y-3 rounded-lg border border-line bg-card p-3"
               >
                 <div className="grid gap-3 sm:grid-cols-2">
                   <input
@@ -283,17 +286,17 @@ export default function TailorPage() {
           </details>
         </section>
 
-        <section className="space-y-3">
-          <h3 className="text-lg font-medium">The job posting</h3>
+        <section className="card space-y-3 p-5">
+          <h3 className="font-semibold">The job posting</h3>
           <JobPostingInput
             text={inputs.jobPosting}
             onChange={(jobPosting) => setInputs({ ...inputs, jobPosting })}
           />
         </section>
 
-        <div className="flex flex-wrap items-center gap-3 border-t border-line pt-6">
+        <div className="flex flex-wrap items-center gap-3 pt-2">
           <button
-            className="btn"
+            className="btn px-5 py-2.5 text-base"
             disabled={!ready || tailoring}
             onClick={tailor}
           >
@@ -330,7 +333,7 @@ export default function TailorPage() {
         {tailorError && (
           <p
             role="alert"
-            className="whitespace-pre-line rounded-md border border-bad p-3 text-sm text-bad"
+            className="whitespace-pre-line rounded-lg border border-bad/40 bg-bad-soft p-3 text-sm text-bad"
           >
             {tailorError}
           </p>
@@ -338,35 +341,13 @@ export default function TailorPage() {
       </div>
 
       <div id="results" className="space-y-4 border-t border-line pt-8">
-        <h2 className="flex items-center gap-2 text-xl font-semibold">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm text-white dark:text-black">
+        <h2 className="flex items-center gap-3 text-xl font-semibold tracking-tight">
+          <span className="step-dot">
             2
           </span>
           See your results
         </h2>
-        <div
-          role="tablist"
-          aria-label="Results"
-          className="flex flex-wrap gap-1 border-b border-line"
-        >
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              id={`tab-${t.id}`}
-              aria-selected={tab === t.id}
-              aria-controls={`panel-${t.id}`}
-              onClick={() => setTab(t.id)}
-              className={`-mb-px border-b-2 px-3 py-2 text-sm ${
-                tab === t.id
-                  ? "border-accent font-medium text-foreground"
-                  : "border-transparent text-muted hover:text-foreground"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <Tabs tabs={TABS} value={tab} onChange={setTab} label="Results" />
 
         <div
           role="tabpanel"
@@ -380,13 +361,13 @@ export default function TailorPage() {
                 result={tailored.result}
                 originalResume={tailored.resume}
               />
-              <div className="mt-8 rounded-lg border border-line bg-card p-4 text-sm">
+              <div className="mt-8 card p-4 text-sm">
                 {logged ? (
                   <p>
                     Saved. See it in your{" "}
                     <Link
                       href="/applications"
-                      className="text-accent underline"
+                      className="link"
                     >
                       application log
                     </Link>

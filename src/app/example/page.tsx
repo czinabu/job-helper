@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DownloadPanel } from "@/components/DownloadPanel";
+import { PageHeader } from "@/components/PageHeader";
+import { Tabs } from "@/components/Tabs";
 import { FormatChecks, FormatReviewView } from "@/components/FormatCard";
 import { SuggestionsList } from "@/components/SuggestionsCard";
 import { TailorResults } from "@/components/TailorResults";
@@ -26,8 +28,8 @@ const TABS = [
 
 function Sample({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <details className="rounded-md border border-line p-3">
-      <summary className="cursor-pointer text-sm font-medium">{title}</summary>
+    <details className="card p-4">
+      <summary className="cursor-pointer text-sm font-semibold">{title}</summary>
       <div className="mt-3">{children}</div>
     </details>
   );
@@ -50,13 +52,14 @@ export default function Example() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <h1 className="text-2xl font-semibold">See an example</h1>
-        <p className="text-sm text-muted">
+      <div className="space-y-4">
+        <PageHeader eyebrow="Example" title="See an example">
+          <p>
           This is what Rolevisor gives you, using a made-up resume for &quot;Sam&quot; and a made-up
           job posting. The results were prepared ahead of time, so you don&apos;t need an API key
           and nothing is sent anywhere.
-        </p>
+          </p>
+        </PageHeader>
         <div className="flex flex-wrap gap-3">
           <Link href="/tailor" className="btn">
             Try it with your resume
@@ -68,7 +71,7 @@ export default function Example() {
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-medium">What went in</h2>
+        <h2 className="text-xl font-semibold tracking-tight">What went in</h2>
         <Sample title="Sam's resume">
           <SampleText text={EXAMPLE_INPUTS.resume} />
         </Sample>
@@ -93,33 +96,15 @@ export default function Example() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">What came out</h2>
-        <div role="tablist" aria-label="Example results" className="flex flex-wrap gap-1 border-b border-line">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              id={`tab-${t.id}`}
-              aria-selected={tab === t.id}
-              aria-controls={`panel-${t.id}`}
-              onClick={() => setTab(t.id)}
-              className={`-mb-px border-b-2 px-3 py-2 text-sm ${
-                tab === t.id
-                  ? "border-accent font-medium text-foreground"
-                  : "border-transparent text-muted hover:text-foreground"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <h2 className="text-xl font-semibold tracking-tight">What came out</h2>
+        <Tabs tabs={TABS} value={tab} onChange={setTab} label="Example results" />
 
         <div role="tabpanel" id="panel-tailor" aria-labelledby="tab-tailor" hidden={tab !== "tailor"}>
           <TailorResults result={EXAMPLE_TAILORED} originalResume={EXAMPLE_INPUTS.resume} />
         </div>
 
         <div role="tabpanel" id="panel-suggestions" aria-labelledby="tab-suggestions" hidden={tab !== "suggestions"}>
-          <section className="space-y-4 rounded-lg border border-line bg-card p-5">
+          <section className="space-y-4 card p-5">
             <h2 className="text-lg font-medium">Suggestions for this job</h2>
             <p className="text-sm text-muted">
               The changes most worth making first. Text in [brackets] is for Sam to fill in, only
@@ -130,7 +115,7 @@ export default function Example() {
         </div>
 
         <div role="tabpanel" id="panel-format" aria-labelledby="tab-format" hidden={tab !== "format"}>
-          <section className="space-y-4 rounded-lg border border-line bg-card p-5">
+          <section className="space-y-4 card p-5">
             <FormatChecks report={report} />
             <p className="text-xs text-muted">
               Measured as if Sam had uploaded a one-page PDF. When you upload your own file,
@@ -144,7 +129,7 @@ export default function Example() {
         </div>
 
         <div role="tabpanel" id="panel-letter" aria-labelledby="tab-letter" hidden={tab !== "letter"}>
-          <section className="space-y-4 rounded-lg border border-line bg-card p-5">
+          <section className="space-y-4 card p-5">
             <h2 className="text-lg font-medium">Cover letter</h2>
             <p className="text-sm text-muted">Professional tone, standard length.</p>
             <SampleText text={EXAMPLE_LETTER.letter} />
@@ -158,8 +143,8 @@ export default function Example() {
         </div>
       </section>
 
-      <div className="flex flex-wrap items-center gap-3 border-t border-line pt-6">
-        <span className="text-sm">Ready to try it on your own resume?</span>
+      <div className="card flex flex-col gap-3 border-accent/30 bg-accent-soft p-5 sm:flex-row sm:items-center sm:justify-between">
+        <span className="font-medium">Ready to try it on your own resume?</span>
         <Link href="/tailor" className="btn">
           Tailor my resume
         </Link>
