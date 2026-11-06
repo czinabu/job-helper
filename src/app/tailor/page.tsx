@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { BulletCheckCard } from "@/components/BulletCheckCard";
 import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
 import { OriginalDownloadCard } from "@/components/OriginalDownloadCard";
@@ -556,6 +557,14 @@ export default function TailorPage() {
                 resume={inputs.resume}
                 layout={layout}
                 settings={settings}
+              />
+              <BulletCheckCard
+                resume={inputs.resume}
+                missingKeywords={
+                  tailored?.resume === inputs.resume
+                    ? tailored.result.missingSkills
+                    : undefined
+                }
               />
               <OriginalDownloadCard resume={inputs.resume} />
             </div>

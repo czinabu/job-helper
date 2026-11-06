@@ -73,3 +73,4 @@ How it fits together:
 - `src/lib/keywordMatch.ts`: the keyword match score, plain code with no model. `src/lib/skillTerms.ts` is the bundled skills list it looks for; add terms there. `src/components/KeywordMatchCard.tsx` shows it. Tests run with `npm test`.
 - `src/lib/parseResume.ts`: reads PDF and Word files in the browser.
 - `src/lib/structureResume.ts`: sorts an uploaded or pasted resume into headings, entries, and bullets with plain rules (no model), so `src/components/OriginalDownloadCard.tsx` can download it in the templates from `src/lib/resumeDoc.ts`.
+- `src/lib/bulletCheck.ts`: the free, rule-based bullet check (weak openers, no numbers, passive voice, length, repeated verbs). No model; `src/components/BulletCheckCard.tsx` shows it on the Formatting tab.
