@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f7f9;
-  --foreground: #14161a;
-  --muted: #5b616e;
-  --line: #e3e6eb;
-  --card: #ffffff;
-  --accent: #3451e0;
-  --accent-strong: #2840c4;
+  --background: #ffffff;
+  --foreground: #18181b;
+  --muted: #5f6168;
+  --line: #e4e4e7;
+  --card: #f7f7f8;
+  --accent: #2554d9;
+  --accent-strong: #1d44b8;
   --accent-soft: #eef1fe;
   --on-accent: #ffffff;
   --good: #1a7f37;
@@ -35,15 +35,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0d0e11;
+    --background: #0f0f10;
     --foreground: #ecedf0;
     --muted: #a1a6b2;
-    --line: #2a2d34;
-    --card: #16181d;
-    --accent: #8ea2ff;
-    --accent-strong: #aebcff;
+    --line: #2c2c2e;
+    --card: #18181a;
+    --accent: #7d9cff;
+    --accent-strong: #9db4ff;
     --accent-soft: #1c2140;
-    --on-accent: #0d0e11;
+    --on-accent: #000000;
     --good: #4ac26b;
     --good-soft: #13281a;
     --bad: #ff7b72;
@@ -65,28 +65,25 @@ body {
 /* Component classes live in the components layer so utilities (px-5, w-auto, border-accent) can override them. */
 @layer components {
   .card {
-    @apply rounded-xl border border-line bg-card shadow-[0_1px_2px_rgb(16_24_40/0.04)];
+    @apply rounded-lg border border-line bg-background;
   }
 
   .field {
-    @apply w-full rounded-lg border border-line bg-card px-3 py-2 text-sm shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition outline-none placeholder:text-muted/70 focus:border-accent focus:ring-3 focus:ring-accent/15;
+    @apply w-full rounded-md border border-line bg-background px-3 py-2 text-sm transition-colors outline-none placeholder:text-muted/70 focus:border-accent;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent shadow-sm transition hover:bg-accent-strong active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent transition-colors hover:bg-accent-strong disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-card px-4 py-2 text-sm font-medium shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition hover:border-muted/40 hover:bg-background active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-line bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-card disabled:pointer-events-none disabled:opacity-50;
   }
 
   .link {
     @apply text-accent underline decoration-accent/30 underline-offset-2 transition hover:decoration-accent;
   }
 
-  .eyebrow {
-    @apply text-xs font-semibold tracking-wide text-accent uppercase;
-  }
 
   /* A step number in a circle, used on Tailor and the API key guide. */
   .step-dot {

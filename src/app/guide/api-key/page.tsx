@@ -55,7 +55,7 @@ export default function ApiKeyGuide() {
         </div>
       </div>
 
-      <div className="card border-accent/30 bg-accent-soft p-4 text-sm">
+      <div className="card bg-card p-4 text-sm">
         <p className="font-medium">Already pay for Claude Pro or Max?</p>
         <p className="mt-1 text-muted">
           That subscription covers the Claude app, not the API. The API is billed separately, pay

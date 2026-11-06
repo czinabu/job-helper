@@ -46,7 +46,7 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Tracker" title="Application log">
+      <PageHeader title="Application log">
         <p>
           Keep track of where you applied and what you heard back. This list is saved only in this
           browser, so download a backup now and then.
@@ -110,7 +110,7 @@ export default function ApplicationsPage() {
         </p>
       )}
       {dueCount > 0 && (
-        <p className="rounded-lg border border-accent/30 bg-accent-soft p-3 text-sm">
+        <p className="rounded-lg border bg-card p-3 text-sm">
           {dueCount} application{dueCount === 1 ? " is" : "s are"} ready for a follow-up.
         </p>
       )}

@@ -62,7 +62,7 @@ export default function RoleFinderPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <PageHeader eyebrow="Role finder" title="Find roles that fit you">
+        <PageHeader title="Find roles that fit you">
           <p className="font-medium text-foreground">
             Suggests roles that fit your background and links to job searches. It doesn&apos;t list live openings.
           </p>
@@ -85,7 +85,7 @@ export default function RoleFinderPage() {
       </div>
 
       {loaded && !hasResume && (
-        <p className="rounded-lg border border-accent/30 bg-accent-soft p-3 text-sm">
+        <p className="rounded-lg border bg-card p-3 text-sm">
           Add your resume on the{" "}
           <Link href="/tailor" className="link">
             Tailor page
@@ -121,7 +121,7 @@ export default function RoleFinderPage() {
             <section key={role.title} className="space-y-3 card p-5">
               <div className="flex flex-wrap items-baseline gap-3">
                 <h2 className="text-lg font-semibold tracking-tight">{role.title}</h2>
-                <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">{role.fit}</span>
+                <span className="rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">{role.fit}</span>
               </div>
               <p className="text-sm">{role.whyItFits}</p>
               {role.transferableSkills.length > 0 && (

@@ -59,7 +59,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader eyebrow="Settings" title="Model settings">
+      <PageHeader title="Model settings">
         <p>
           Choose which AI model reads your resume. Your settings are saved only in this browser. Nothing you enter here is sent to Rolevisor&apos;s server.
         </p>
@@ -72,8 +72,8 @@ export default function SettingsPage() {
             key={p.id}
             className={`flex cursor-pointer gap-3 rounded-xl border p-4 transition ${
               settings.provider === p.id
-                ? "border-accent bg-accent-soft ring-3 ring-accent/10"
-                : "border-line bg-card hover:border-muted/40"
+                ? "border-accent bg-card"
+                : "border-line hover:bg-card"
             }`}
           >
             <input

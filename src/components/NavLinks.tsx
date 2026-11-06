@@ -24,7 +24,7 @@ export function NavLinks() {
             aria-current={active ? "page" : undefined}
             className={`shrink-0 rounded-lg px-3 py-1.5 whitespace-nowrap transition ${
               active
-                ? "bg-accent-soft font-medium text-accent"
+                ? "bg-card font-medium text-foreground"
                 : "text-muted hover:bg-foreground/5 hover:text-foreground"
             }`}
           >

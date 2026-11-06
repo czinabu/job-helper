@@ -223,7 +223,7 @@ function EducationAdvice({ advice }: { advice: TailorResult["educationAdvice"] }
       <h2 className="text-lg font-medium">Education for this job</h2>
       <div className="space-y-3 card p-5 text-sm">
         <p>
-          <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
+          <span className="rounded-full border border-line bg-card px-3 py-1 text-xs font-medium">
             {advice.recommendation}
           </span>
         </p>

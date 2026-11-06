@@ -125,13 +125,13 @@ export default function TailorPage() {
   return (
     <div className="space-y-10">
       <div className="space-y-4">
-        <PageHeader eyebrow="Tailor" title="Tailor your resume to a job">
+        <PageHeader title="Tailor your resume to a job">
           <p>
             Two steps: add your details, then see your results. Everything stays
             in this browser until you ask for help.
           </p>
         </PageHeader>
-        <div className="card flex flex-col gap-3 border-accent/30 bg-accent-soft p-4 text-sm sm:flex-row sm:items-center">
+        <div className="card flex flex-col gap-3 bg-card p-4 text-sm sm:flex-row sm:items-center">
           <span className="flex-1">
             Not sure what you&apos;ll get? See full results for a sample resume first. No API key
             needed.

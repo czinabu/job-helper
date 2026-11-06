@@ -53,7 +53,7 @@ export default function Example() {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <PageHeader eyebrow="Example" title="See an example">
+        <PageHeader title="See an example">
           <p>
           This is what Rolevisor gives you, using a made-up resume for &quot;Sam&quot; and a made-up
           job posting. The results were prepared ahead of time, so you don&apos;t need an API key
@@ -143,7 +143,7 @@ export default function Example() {
         </div>
       </section>
 
-      <div className="card flex flex-col gap-3 border-accent/30 bg-accent-soft p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="card flex flex-col gap-3 bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
         <span className="font-medium">Ready to try it on your own resume?</span>
         <Link href="/tailor" className="btn">
           Tailor my resume
