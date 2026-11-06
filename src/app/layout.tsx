@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
-import { Inter } from "next/font/google";
+import { Inter, Newsreader } from "next/font/google";
 import { NavLinks } from "@/components/NavLinks";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { THEME_SCRIPT } from "@/lib/theme";
@@ -9,6 +9,13 @@ import "./globals.css";
 
 // Self-hosted by Next.js at build time, so it stays within the font-src 'self' policy.
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+// The serif for the wordmark and the landing page's headings.
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-newsreader",
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 const SITE_URL = "https://rolevisor.vercel.app";
 const DESCRIPTION =
@@ -40,14 +47,14 @@ export default function RootLayout({
 }>) {
   return (
     // The head script sets data-theme before React hydrates, so the server markup won't match it.
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${newsreader.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="flex min-h-screen flex-col antialiased">
         <header className="sticky top-0 z-20 border-b border-line bg-background/90 backdrop-blur">
           <nav className="mx-auto flex max-w-3xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <Link href="/" className="text-lg font-semibold tracking-tight">
+            <Link href="/" className="font-display text-xl font-medium tracking-tight">
               Rolevisor
             </Link>
             <NavLinks />
