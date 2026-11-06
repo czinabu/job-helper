@@ -17,6 +17,7 @@ You can use it with:
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
 3. Open **Tailor**, add your resume and the job posting, and click **Tailor my resume**. You get a rewritten resume, an AI fit score, the skills you have and are missing, which of the posting's keywords each version contains, and a list of what changed and why.
    The **Keyword match** tab works without any API key or model. It pulls the skills, tools, and credentials the posting names, weighs them by section (requirements count most, nice-to-haves less, the company blurb and benefits not at all), and shows which ones your resume has, like an applicant tracking system would.
+   The **Formatting** tab works without a key or model: it checks length, sections, bullets, contact details, and whether your dates use one style, and with a job posting it says whether LinkedIn and GitHub links would help.
 4. Want your own resume in a cleaner layout? On the **Formatting** tab, **Download your resume in a clean template** turns the resume you added into the Classic or Modern PDF or Word file, word for word. It runs entirely in your browser and needs no API key or model.
 5. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
 

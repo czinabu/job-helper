@@ -40,6 +40,9 @@ export interface FormatReport {
 const SAFE_FONTS = ["arial", "calibri", "times new roman", "times", "helvetica", "georgia", "cambria", "garamond", "verdana", "tahoma", "liberation", "dejavu", "open sans", "lato", "roboto", "carlito", "arimo"];
 const BULLET_LINE = /^\s*[•·▪◦●■►▸➢✓*–—-]\s/;
 
+const listOf = (items: string[]) =>
+  items.length < 3 ? items.join(" and ") : `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+
 const inches = (n: number) => `${n.toFixed(2).replace(/0$/, "")} in`;
 
 /** Checks a resume against what resume experts and recruiters recommend. */
@@ -178,8 +181,63 @@ export function checkFormat(text: string, layout: ResumeLayout | null): FormatRe
     add("contact", "warn", "Contact details not at the top", "Put your email and phone number in the first few lines, in the main body of the page.", JOBSCAN);
   }
 
+  const dates = dateStyles(text);
+  if (dates.styles.length > 1) {
+    add(
+      "dates",
+      "warn",
+      "Dates use different styles",
+      `Your dates mix ${listOf(dates.styles.map((s) => `"${s.example}"`))}. Pick one style, such as "Jan 2020 – Mar 2023", and use it everywhere.`,
+      RESUME_GENIUS,
+    );
+  } else if (dates.ongoing.length > 1) {
+    add(
+      "dates",
+      "warn",
+      "Current jobs worded differently",
+      `Ongoing dates end with both ${dates.ongoing.map((w) => `"${w}"`).join(" and ")}. Use one word, usually "Present".`,
+      RESUME_GENIUS,
+    );
+  } else if (dates.count >= 2) {
+    add("dates", "pass", "Consistent dates", "Every date is written the same way.", RESUME_GENIUS);
+  }
+
   const penalty = checks.reduce((sum, c) => sum + (c.status === "fail" ? 15 : c.status === "warn" ? 7 : 0), 0);
   return { score: Math.max(0, 100 - penalty), checks, textOnly: !layout };
+}
+
+const SHORT_MONTH = "(?:jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\\.?";
+const LONG_MONTH = "(?:january|february|march|april|june|july|august|september|october|november|december)";
+const YEAR = "(?:19|20)\\d{2}";
+
+/** Date styles, checked in this order so a longer form wins over a shorter one inside it. */
+const DATE_STYLES: { name: string; re: string }[] = [
+  { name: "full date", re: `\\b\\d{1,2}[/.-]\\d{1,2}[/.-]${YEAR}\\b` },
+  { name: "year-month", re: `\\b${YEAR}[/.-](?:0?[1-9]|1[0-2])\\b` },
+  { name: "month name", re: `\\b${LONG_MONTH},?\\s+${YEAR}\\b` },
+  { name: "short month", re: `\\b${SHORT_MONTH},?\\s+${YEAR}\\b` },
+  { name: "numeric month", re: `\\b(?:0?[1-9]|1[0-2])[/.-]${YEAR}\\b` },
+  // A bare year counts only in a range ("2019 – 2021", "2019 - Present"), so a graduation year on its own doesn't.
+  { name: "year only", re: `\\b${YEAR}\\s*(?:-|–|—|to)\\s*(?:${YEAR}|present|current|now)\\b` },
+];
+// "May" is both the short and the full name, so it's matched but doesn't count toward either style.
+const MAY = `\\bmay,?\\s+${YEAR}\\b`;
+const DATE_RE = new RegExp([...DATE_STYLES.map((s) => `(${s.re})`), `(${MAY})`].join("|"), "gi");
+const ONGOING_RE = new RegExp(`${YEAR}\\s*(?:-|–|—|to)\\s*(present|current|now|today)\\b`, "gi");
+
+/** The date styles a resume uses, with the first example of each, and the words it uses for an ongoing job. */
+export function dateStyles(text: string): { count: number; styles: { name: string; example: string }[]; ongoing: string[] } {
+  const styles: { name: string; example: string }[] = [];
+  let count = 0;
+  for (const m of text.matchAll(DATE_RE)) {
+    count++;
+    const i = m.slice(1).findIndex(Boolean);
+    const style = DATE_STYLES[i];
+    if (!style) continue; // "May 2020"
+    if (!styles.some((s) => s.name === style.name)) styles.push({ name: style.name, example: m[0].replace(/\s+/g, " ") });
+  }
+  const ongoing = [...new Set([...text.matchAll(ONGOING_RE)].map((m) => m[1][0].toUpperCase() + m[1].slice(1).toLowerCase()))];
+  return { count, styles, ongoing };
 }
 
 /** A plain-text summary of the measurements and findings, for the model to build on. */
