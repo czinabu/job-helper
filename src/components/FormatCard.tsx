@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LinkPrompt } from "@/components/LinkPrompt";
 import { Loading } from "@/components/Loading";
 import { runTask } from "@/lib/ai";
 import { friendlyMessage } from "@/lib/errors";
 import { checkFormat, describeLayout, type CheckStatus, type FormatReport } from "@/lib/formatCheck";
 import type { FormatReview } from "@/lib/formatReview";
 import type { ResumeLayout } from "@/lib/layout";
+import { adviseLinks } from "@/lib/linkAdvice";
 import type { ModelSettings } from "@/lib/providers";
 
 const ICON: Record<CheckStatus, string> = { pass: "✓", warn: "!", fail: "✕" };
@@ -19,17 +21,26 @@ const TONE: Record<CheckStatus, string> = {
 /**
  * Grades the resume's formatting and spacing. The measured checks show right
  * away and cost nothing; the AI review reads the text for what they can't see.
+ * With a job posting, it also says whether LinkedIn and GitHub links would help, from simple rules (no model).
  */
 export function FormatCard({
   resume,
   layout,
   settings,
+  jobPosting = "",
+  targetRole = "",
 }: {
   resume: string;
   layout: ResumeLayout | null;
   settings: ModelSettings;
+  jobPosting?: string;
+  targetRole?: string;
 }) {
   const report = useMemo(() => checkFormat(resume, layout), [resume, layout]);
+  const linkAdvice = useMemo(
+    () => (jobPosting.trim() ? adviseLinks(jobPosting, targetRole) : undefined),
+    [jobPosting, targetRole],
+  );
   const [review, setReview] = useState<FormatReview | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -57,6 +68,7 @@ export function FormatCard({
   return (
     <section className="space-y-4 card p-5">
       <FormatChecks report={report} />
+      <LinkPrompt resume={resume} advice={linkAdvice} />
 
       <div className="space-y-3 border-t border-line pt-4">
         {!review && (

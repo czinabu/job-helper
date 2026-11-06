@@ -475,6 +475,8 @@ export default function TailorPage() {
               resume={inputs.resume}
               layout={layout}
               settings={settings}
+              jobPosting={inputs.jobPosting}
+              targetRole={inputs.background.targetRole}
             />
           ) : (
             <Empty>
