@@ -1,19 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #18181b;
-  --muted: #5f6168;
-  --line: #e4e4e7;
-  --card: #f7f7f8;
-  --accent: #2554d9;
-  --accent-strong: #1d44b8;
-  --accent-soft: #eef1fe;
-  --on-accent: #ffffff;
-  --good: #1a7f37;
-  --good-soft: #e9f6ec;
-  --bad: #b42318;
-  --bad-soft: #fdeceb;
+  /* Follows the device setting until someone picks Light or Dark in the footer. */
+  color-scheme: light dark;
+  --background: light-dark(#ffffff, #0f0f10);
+  --foreground: light-dark(#18181b, #ecedf0);
+  --muted: light-dark(#5f6168, #a1a6b2);
+  --line: light-dark(#e4e4e7, #2c2c2e);
+  --card: light-dark(#f7f7f8, #18181a);
+  --accent: light-dark(#2554d9, #7d9cff);
+  --accent-strong: light-dark(#1d44b8, #9db4ff);
+  --accent-soft: light-dark(#eef1fe, #1c2140);
+  --on-accent: light-dark(#ffffff, #000000);
+  --good: light-dark(#1a7f37, #4ac26b);
+  --good-soft: light-dark(#e9f6ec, #13281a);
+  --bad: light-dark(#b42318, #ff7b72);
+  --bad-soft: light-dark(#fdeceb, #2d1515);
+}
+
+/* Set before first paint by the inline script in layout.tsx, from the saved choice. */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* dark: utilities follow the chosen theme, or the device setting when it is System. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
 }
 
 @theme inline {
@@ -31,24 +53,6 @@
   --color-bad: var(--bad);
   --color-bad-soft: var(--bad-soft);
   --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f0f10;
-    --foreground: #ecedf0;
-    --muted: #a1a6b2;
-    --line: #2c2c2e;
-    --card: #18181a;
-    --accent: #7d9cff;
-    --accent-strong: #9db4ff;
-    --accent-soft: #1c2140;
-    --on-accent: #000000;
-    --good: #4ac26b;
-    --good-soft: #13281a;
-    --bad: #ff7b72;
-    --bad-soft: #2d1515;
-  }
 }
 
 body {
