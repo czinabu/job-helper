@@ -17,7 +17,8 @@ You can use it with:
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
 3. Open **Tailor**, add your resume and the job posting, and click **Tailor my resume**. You get a rewritten resume, a match score, the skills you have and are missing, which of the posting's keywords each version contains, and a list of what changed and why.
    The **Formatting** tab works without a key or model: it checks length, sections, bullets, contact details, and whether your dates use one style, and with a job posting it says whether LinkedIn and GitHub links would help.
-4. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
+4. Want your own resume in a cleaner layout? On the **Formatting** tab, **Download your resume in a clean template** turns the resume you added into the Classic or Modern PDF or Word file, word for word. It runs entirely in your browser and needs no API key or model.
+5. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
 
 If something isn't set up right, Test connection tells you what to fix in plain English.
 
@@ -69,3 +70,4 @@ How it fits together:
 - `src/lib/claude.ts`: runs tasks on Claude **from the browser** (there are no server API routes). `src/lib/apiKey.ts` and `src/lib/useSettings.ts` keep the key out of the saved settings. Heavy tasks use the main model, light ones the quick model.
 - `src/lib/tailor.ts`: the `tailor` task (heavy, so it runs on the main model) and the keyword check. `src/components/TailorResults.tsx` shows the results.
 - `src/lib/parseResume.ts`: reads PDF and Word files in the browser.
+- `src/lib/structureResume.ts`: sorts an uploaded or pasted resume into headings, entries, and bullets with plain rules (no model), so `src/components/OriginalDownloadCard.tsx` can download it in the templates from `src/lib/resumeDoc.ts`.
