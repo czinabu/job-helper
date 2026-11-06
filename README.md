@@ -17,7 +17,8 @@ You can use it with:
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
 3. Open **Tailor**, add your resume and the job posting, and click **Tailor my resume**. You get a rewritten resume, an AI fit score, the skills you have and are missing, which of the posting's keywords each version contains, and a list of what changed and why.
    The **Keyword match** tab works without any API key or model. It pulls the skills, tools, and credentials the posting names, weighs them by section (requirements count most, nice-to-haves less, the company blurb and benefits not at all), and shows which ones your resume has, like an applicant tracking system would.
-4. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
+4. Want your own resume in a cleaner layout? On the **Formatting** tab, **Download your resume in a clean template** turns the resume you added into the Classic or Modern PDF or Word file, word for word. It runs entirely in your browser and needs no API key or model.
+5. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
 
 If something isn't set up right, Test connection tells you what to fix in plain English.
 
@@ -71,3 +72,4 @@ How it fits together:
 - `src/lib/tailor.ts`: the `tailor` task (heavy, so it runs on the main model) and the keyword check. `src/components/TailorResults.tsx` shows the results.
 - `src/lib/keywordMatch.ts`: the keyword match score, plain code with no model. `src/lib/skillTerms.ts` is the bundled skills list it looks for; add terms there. `src/components/KeywordMatchCard.tsx` shows it. Tests run with `npm test`.
 - `src/lib/parseResume.ts`: reads PDF and Word files in the browser.
+- `src/lib/structureResume.ts`: sorts an uploaded or pasted resume into headings, entries, and bullets with plain rules (no model), so `src/components/OriginalDownloadCard.tsx` can download it in the templates from `src/lib/resumeDoc.ts`.
