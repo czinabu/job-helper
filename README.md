@@ -16,7 +16,8 @@ You can use it with:
    - **Claude:** paste an API key from [console.anthropic.com](https://console.anthropic.com) (everyone uses their own key, billed to their own Anthropic account), then click **Test connection**. New to API keys? The site has a step-by-step guide at [/guide/api-key](https://rolevisor.vercel.app/guide/api-key), with rough costs (tailoring one resume is about 1 to 3 cents on the default models).
    - **LM Studio or Ollama:** follow the [local model setup guide](docs/local-models.md) first, then click **Test connection**.
 3. Open **Tailor**, add your resume and the job posting, and click **Tailor my resume**. You get a rewritten resume, a match score, the skills you have and are missing, which of the posting's keywords each version contains, and a list of what changed and why.
-4. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
+4. Want your own resume in a cleaner layout? On the **Formatting** tab, **Download your resume in a clean template** turns the resume you added into the Classic or Modern PDF or Word file, word for word. It runs entirely in your browser and needs no API key or model.
+5. Not sure what to apply for? Open **Role finder**. It suggests roles that fit your background and links to job searches on the big job boards. It doesn't list live openings.
 
 If something isn't set up right, Test connection tells you what to fix in plain English.
 
@@ -68,4 +69,5 @@ How it fits together:
 - `src/lib/claude.ts`: runs tasks on Claude **from the browser** (there are no server API routes). `src/lib/apiKey.ts` and `src/lib/useSettings.ts` keep the key out of the saved settings. Heavy tasks use the main model, light ones the quick model.
 - `src/lib/tailor.ts`: the `tailor` task (heavy, so it runs on the main model) and the keyword check. `src/components/TailorResults.tsx` shows the results.
 - `src/lib/parseResume.ts`: reads PDF and Word files in the browser.
+- `src/lib/structureResume.ts`: sorts an uploaded or pasted resume into headings, entries, and bullets with plain rules (no model), so `src/components/OriginalDownloadCard.tsx` can download it in the templates from `src/lib/resumeDoc.ts`.
 - `src/lib/bulletCheck.ts`: the free, rule-based bullet check (weak openers, no numbers, passive voice, length, repeated verbs). No model; `src/components/BulletCheckCard.tsx` shows it on the Formatting tab.

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BulletCheckCard } from "@/components/BulletCheckCard";
 import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
+import { OriginalDownloadCard } from "@/components/OriginalDownloadCard";
 import { Loading } from "@/components/Loading";
 import { JobPostingInput } from "@/components/JobPostingInput";
 import { PageHeader } from "@/components/PageHeader";
@@ -472,7 +473,7 @@ export default function TailorPage() {
           hidden={tab !== "format"}
         >
           {inputs.resume.trim() ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <FormatCard
                 resume={inputs.resume}
                 layout={layout}
@@ -486,10 +487,12 @@ export default function TailorPage() {
                     : undefined
                 }
               />
+              <OriginalDownloadCard resume={inputs.resume} />
             </div>
           ) : (
             <Empty>
-              Add your resume above to check its formatting and spacing.
+              Add your resume above to check its formatting and spacing, or
+              to download it in a clean template.
             </Empty>
           )}
         </div>
