@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 import { Inter } from "next/font/google";
 import { NavLinks } from "@/components/NavLinks";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 // Self-hosted by Next.js at build time, so it stays within the font-src 'self' policy.
@@ -37,7 +39,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    // The head script sets data-theme before React hydrates, so the server markup won't match it.
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="flex min-h-screen flex-col antialiased">
         <header className="sticky top-0 z-20 border-b border-line bg-background/90 backdrop-blur">
           <nav className="mx-auto flex max-w-3xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -50,7 +56,7 @@ export default function RootLayout({
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">{children}</main>
         <footer className="border-t border-line">
           <div className="mx-auto flex max-w-3xl flex-col gap-3 px-4 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-            <p>Rolevisor</p>
+            <ThemeToggle />
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               <Link href="/privacy" className="hover:text-foreground">
                 Privacy
