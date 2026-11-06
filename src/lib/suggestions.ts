@@ -2,6 +2,7 @@ import { z } from "zod";
 import { aboutText } from "./coverLetter";
 import { BackgroundSchema } from "./tailor";
 import type { Task } from "./tasks";
+import { WRITING_STYLE, cleanAnswer } from "./writingStyle";
 
 export const SuggestionsRequestSchema = z.object({
   resume: z.string().trim().min(1, "Add your resume first."),
@@ -57,7 +58,9 @@ Give three kinds of advice, each ordered with the highest priority first (priori
 - gaps: requirements the posting asks for that the materials don't show. Say honestly how to address each. Never suggest claiming experience the person lacks.
 - emphasize: strengths and experience that match what this employer cares about most, and where to feature them.
 
-Be concrete and brief. Skip generic advice. Return fewer items rather than padding; an empty list is fine if nothing applies.`;
+Be concrete and brief. Skip generic advice. Return fewer items rather than padding; an empty list is fine if nothing applies.
+
+${WRITING_STYLE}`;
 
 export const suggestionsTask: Task<SuggestionsRequest, SuggestionsResult> = {
   // Reads existing text and writes a few rewrites; the quick model is enough.
@@ -76,4 +79,6 @@ ${jobPosting.trim()}
 Give prioritized suggestions for improving this person's application to this job.`,
   input: SuggestionsRequestSchema,
   output: SuggestionsResultSchema,
+  // "original" is the person's bullet word for word, so it stays as written.
+  clean: (result) => cleanAnswer(result, { keep: ["original"] }),
 };

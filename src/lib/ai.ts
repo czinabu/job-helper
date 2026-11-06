@@ -38,8 +38,9 @@ export async function runTask<Output>(
   const checked = task.input.safeParse(input);
   if (!checked.success) throw new FriendlyError(checked.error.issues[0].message);
 
-  if (PROVIDERS[settings.provider].isLocal) {
-    return runLocalTask(settings, task, checked.data);
-  }
-  return runClaudeTask(settings, task, checked.data);
+  const output = PROVIDERS[settings.provider].isLocal
+    ? await runLocalTask(settings, task, checked.data)
+    : await runClaudeTask(settings, task, checked.data);
+  // The prompts ask for natural writing; this catches what slips through.
+  return (task.clean ? task.clean(output) : output) as Output;
 }
