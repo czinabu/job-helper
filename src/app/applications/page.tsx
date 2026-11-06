@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/PageHeader";
 import { useRef, useState } from "react";
 import {
   STATUSES,
@@ -45,13 +46,12 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Application log</h1>
-        <p className="mt-1 text-sm text-muted">
+      <PageHeader title="Application log">
+        <p>
           Keep track of where you applied and what you heard back. This list is saved only in this
           browser, so download a backup now and then.
         </p>
-      </div>
+      </PageHeader>
 
       <div className="flex flex-wrap items-center gap-3">
         <button className="btn" onClick={() => setEditing(newApplication())}>
@@ -70,7 +70,7 @@ export default function ApplicationsPage() {
             </option>
           ))}
         </select>
-        <div className="ml-auto flex gap-2">
+        <div className="flex flex-wrap gap-2 sm:ml-auto">
           <button
             className="btn-secondary"
             disabled={apps.length === 0}
@@ -110,7 +110,7 @@ export default function ApplicationsPage() {
         </p>
       )}
       {dueCount > 0 && (
-        <p className="rounded-md border border-accent p-3 text-sm">
+        <p className="rounded-lg border bg-card p-3 text-sm">
           {dueCount} application{dueCount === 1 ? " is" : "s are"} ready for a follow-up.
         </p>
       )}
@@ -118,7 +118,7 @@ export default function ApplicationsPage() {
       {editing && <Editor app={editing} onSave={save} onCancel={() => setEditing(null)} />}
 
       {loaded && apps.length === 0 && !editing && (
-        <p className="rounded-lg border border-line bg-card p-5 text-sm text-muted">
+        <p className="card p-5 text-sm text-muted">
           Nothing here yet. Add an application, or tailor your resume to a job and choose
           &ldquo;Save to log&rdquo;.
         </p>
@@ -128,7 +128,7 @@ export default function ApplicationsPage() {
         {shown.map((a) => {
           const due = a.followUp && a.followUp <= today() && (a.status === "applied" || a.status === "heard_back");
           return (
-            <li key={a.id} className="rounded-lg border border-line p-4 text-sm">
+            <li key={a.id} className="card p-4 text-sm">
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <span className="font-medium">{a.role || "Untitled role"}</span>
                 <span className="text-muted">{a.company}</span>
@@ -153,7 +153,7 @@ export default function ApplicationsPage() {
                 {a.link && (
                   <>
                     {" · "}
-                    <a className="text-accent underline" href={safeUrl(a.link)} target="_blank" rel="noreferrer">
+                    <a className="link" href={safeUrl(a.link)} target="_blank" rel="noreferrer">
                       Job posting
                     </a>
                   </>
@@ -161,7 +161,7 @@ export default function ApplicationsPage() {
               </p>
               {a.notes && <p className="mt-2 whitespace-pre-wrap">{a.notes}</p>}
               <div className="mt-2 flex gap-4 text-xs">
-                <button className="text-accent underline" onClick={() => setEditing(a)}>
+                <button className="link" onClick={() => setEditing(a)}>
                   Edit
                 </button>
                 <button
@@ -203,7 +203,7 @@ function Editor({
 
   return (
     <form
-      className="space-y-3 rounded-lg border border-accent bg-card p-4"
+      className="space-y-3 card border-accent p-4"
       onSubmit={(e) => {
         e.preventDefault();
         if (ok) onSave(draft);

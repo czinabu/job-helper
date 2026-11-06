@@ -2,13 +2,18 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --muted: #5c5c5c;
-  --line: #e2e2e2;
+  --foreground: #18181b;
+  --muted: #5f6168;
+  --line: #e4e4e7;
   --card: #f7f7f8;
   --accent: #2554d9;
+  --accent-strong: #1d44b8;
+  --accent-soft: #eef1fe;
+  --on-accent: #ffffff;
   --good: #1a7f37;
+  --good-soft: #e9f6ec;
   --bad: #b42318;
+  --bad-soft: #fdeceb;
 }
 
 @theme inline {
@@ -18,31 +23,77 @@
   --color-line: var(--line);
   --color-card: var(--card);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
   --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
   --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0f0f10;
-    --foreground: #ededed;
-    --muted: #a0a0a0;
+    --foreground: #ecedf0;
+    --muted: #a1a6b2;
     --line: #2c2c2e;
     --card: #18181a;
     --accent: #7d9cff;
+    --accent-strong: #9db4ff;
+    --accent-soft: #1c2140;
+    --on-accent: #000000;
     --good: #4ac26b;
+    --good-soft: #13281a;
     --bad: #ff7b72;
+    --bad-soft: #2d1515;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
 }
 
-.field {
-  @apply w-full rounded-md border border-line bg-background px-3 py-2 text-sm outline-none focus:border-accent;
+::selection {
+  background: var(--accent-soft);
+  color: var(--foreground);
+}
+
+/* Component classes live in the components layer so utilities (px-5, w-auto, border-accent) can override them. */
+@layer components {
+  .card {
+    @apply rounded-lg border border-line bg-background;
+  }
+
+  .field {
+    @apply w-full rounded-md border border-line bg-background px-3 py-2 text-sm transition-colors outline-none placeholder:text-muted/70 focus:border-accent;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent transition-colors hover:bg-accent-strong disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-line bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-card disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .link {
+    @apply text-accent underline decoration-accent/30 underline-offset-2 transition hover:decoration-accent;
+  }
+
+
+  /* A step number in a circle, used on Tailor and the API key guide. */
+  .step-dot {
+    @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-on-accent;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Masks the API key without a password input, so browsers don't offer to save it. */
@@ -50,10 +101,11 @@ body {
   -webkit-text-security: disc;
 }
 
-.btn {
-  @apply rounded-md bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:text-black;
+/* Lets a row of tabs or links scroll sideways on a phone instead of wrapping. */
+.scroll-x {
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-
-.btn-secondary {
-  @apply rounded-md border border-line px-4 py-2 text-sm font-medium disabled:opacity-50;
+.scroll-x::-webkit-scrollbar {
+  display: none;
 }

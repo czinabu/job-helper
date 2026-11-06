@@ -10,11 +10,11 @@ const LINKS = [
   { href: "/settings", label: "Model settings" },
 ];
 
-/** The top navigation, with the current page highlighted. */
+/** The top navigation, with the current page highlighted. Scrolls sideways on a phone. */
 export function NavLinks() {
   const pathname = usePathname();
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+    <div className="scroll-x -mx-4 flex gap-1 px-4 text-sm sm:mx-0 sm:px-0">
       {LINKS.map(({ href, label }) => {
         const active = pathname.startsWith(href);
         return (
@@ -22,11 +22,11 @@ export function NavLinks() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={
+            className={`shrink-0 rounded-lg px-3 py-1.5 whitespace-nowrap transition ${
               active
-                ? "border-b-2 border-accent pb-1 font-medium text-foreground"
-                : "border-b-2 border-transparent pb-1 text-muted hover:text-foreground"
-            }
+                ? "bg-card font-medium text-foreground"
+                : "text-muted hover:bg-foreground/5 hover:text-foreground"
+            }`}
           >
             {label}
           </Link>

@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/PageHeader";
 import type { ReactNode } from "react";
 
 export function LegalPage({
@@ -10,9 +11,10 @@ export function LegalPage({
   children: ReactNode;
 }) {
   return (
-    <article className="space-y-4 leading-relaxed [&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-semibold [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6 [&_a]:text-accent [&_a]:underline">
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      <p className="text-sm text-muted">Last updated: {updated}</p>
+    <article className="card space-y-4 p-6 leading-relaxed sm:p-10 [&_h2]:mt-8 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:tracking-tight [&_p]:text-[15px] [&_li]:text-[15px] [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6 [&_a]:text-accent [&_a]:underline">
+      <PageHeader title={title}>
+        <p className="!text-sm">Last updated: {updated}</p>
+      </PageHeader>
       {children}
     </article>
   );

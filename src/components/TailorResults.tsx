@@ -44,9 +44,9 @@ export function TailorResults({
 
   return (
     <div className="space-y-8">
-      <section className="rounded-lg border border-line bg-card p-5">
+      <section className="card p-5">
         <div className="flex items-baseline gap-3">
-          <span className="text-4xl font-semibold">{score}</span>
+          <span className="text-5xl font-semibold tracking-tight">{score}</span>
           <span className="text-sm text-muted">/ 100 · {scoreLabel(score)}</span>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-line">
@@ -91,7 +91,7 @@ export function TailorResults({
                       : "Not in either resume"
                 }
                 className={`rounded-full border px-3 py-1 text-xs ${
-                  k.after ? "border-good text-good" : "border-line text-muted"
+                  k.after ? "border-good/30 bg-good-soft text-good" : "border-line bg-card text-muted"
                 }`}
               >
                 {k.after ? "✓ " : ""}
@@ -132,7 +132,7 @@ export function TailorResults({
           <h2 className="text-lg font-medium">What changed and why</h2>
           <ul className="space-y-3">
             {result.changes.map((c, i) => (
-              <li key={i} className="rounded-md border border-line p-3 text-sm">
+              <li key={i} className="card p-4 text-sm">
                 <p className="font-medium">{c.change}</p>
                 <p className="mt-1 text-muted">{c.reason}</p>
               </li>
@@ -167,7 +167,7 @@ function LinkPrompt({ resume, advice }: { resume: string; advice?: TailorResult[
   const anyRecommended = fields.some((f) => needs[f.key as "linkedin" | "github"] === "recommended");
 
   return (
-    <div role="status" className="space-y-3 rounded-lg border border-accent bg-card p-4 text-sm">
+    <div role="status" className="space-y-3 card border-accent p-4 text-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-medium">Add your profile links</p>
@@ -221,9 +221,9 @@ function EducationAdvice({ advice }: { advice: TailorResult["educationAdvice"] }
   return (
     <section className="space-y-3">
       <h2 className="text-lg font-medium">Education for this job</h2>
-      <div className="space-y-3 rounded-lg border border-line bg-card p-5 text-sm">
+      <div className="space-y-3 card p-5 text-sm">
         <p>
-          <span className="rounded-full border border-accent px-3 py-1 text-xs text-accent">
+          <span className="rounded-full border border-line bg-card px-3 py-1 text-xs font-medium">
             {advice.recommendation}
           </span>
         </p>
@@ -275,7 +275,7 @@ function SkillList({
             <li
               key={s}
               className={`rounded-full border px-3 py-1 text-xs ${
-                tone === "good" ? "border-good text-good" : "border-bad text-bad"
+                tone === "good" ? "border-good/30 bg-good-soft text-good" : "border-bad/30 bg-bad-soft text-bad"
               }`}
             >
               {s}

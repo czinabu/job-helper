@@ -48,19 +48,28 @@ const SCREENSHOTS = [
   },
 ];
 
+function SectionTitle({ title, children }: { title: string; children?: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+      {children && <p className="text-[15px] leading-relaxed text-muted">{children}</p>}
+    </div>
+  );
+}
+
 export default function Landing() {
   return (
-    <div className="space-y-16">
-      <section className="space-y-5 pt-4">
-        <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
+    <div className="space-y-20">
+      <section className="space-y-6 pt-6">
+        <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">
           Tailor your resume to every job you apply for.
         </h1>
-        <p className="text-lg text-muted">
+        <p className="max-w-2xl text-lg leading-relaxed text-muted">
           Rolevisor reads your resume and a job posting, then rewrites your resume for that job,
           writes a cover letter, and tells you what to fix. No account, no subscription, and your
           resume stays between you and the AI.
         </p>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link href="/tailor" className="btn px-5 py-2.5 text-base">
             Start tailoring
           </Link>
@@ -75,23 +84,23 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="space-y-6">
-        <h2 className="text-xl font-semibold">What it does</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+      <section className="space-y-8">
+        <SectionTitle title="What it does" />
+        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
           {FEATURES.map((f) => (
-            <div key={f.title} className="rounded-lg border border-line p-4">
+            <div key={f.title} className="border-t border-line pt-4">
               <h3 className="font-medium">{f.title}</h3>
-              <p className="mt-1 text-sm text-muted">{f.body}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted">{f.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="space-y-6">
-        <h2 className="text-xl font-semibold">See it in action</h2>
+      <section className="space-y-8">
+        <SectionTitle title="See it in action" />
         <div className="grid gap-6 sm:grid-cols-2">
           {SCREENSHOTS.map((s) => (
-            <figure key={s.src} className="space-y-2">
+            <figure key={s.src} className="space-y-3">
               <Image
                 src={s.src}
                 alt={s.alt}
@@ -106,84 +115,92 @@ export default function Landing() {
         <p className="text-xs text-muted">Screenshots use a made-up resume and job posting.</p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold">Why you bring your own key</h2>
-        <p className="text-sm text-muted">
+      <section className="space-y-8">
+        <SectionTitle title="Why you bring your own key">
           Rolevisor uses Claude, Anthropic&apos;s AI, with an API key from your own Anthropic
           account. That sounds technical, but it&apos;s what keeps the tool private and cheap.
-        </p>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-line bg-card p-4">
+        </SectionTitle>
+        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-3">
+          <div className="border-t border-line pt-4">
             <h3 className="font-medium">Private</h3>
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm leading-relaxed text-muted">
               Your resume and key go straight from your browser to Anthropic. They never pass
               through Rolevisor&apos;s server, which stores and logs nothing.
             </p>
           </div>
-          <div className="rounded-lg border border-line bg-card p-4">
+          <div className="border-t border-line pt-4">
             <h3 className="font-medium">No subscription</h3>
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm leading-relaxed text-muted">
               You pay Anthropic only for what you use. Tailoring one resume costs {COST_ESTIMATE.tailoring}.
             </p>
           </div>
-          <div className="rounded-lg border border-line bg-card p-4">
+          <div className="border-t border-line pt-4">
             <h3 className="font-medium">You stay in control</h3>
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm leading-relaxed text-muted">
               Set a spending limit on your Anthropic account, and delete the key any time.
             </p>
           </div>
         </div>
         <p className="text-sm">
-          <Link href="/guide/api-key" className="text-accent underline">
+          <Link href="/guide/api-key" className="link">
             Step-by-step guide to getting a key
           </Link>{" "}
           <span className="text-muted">(about 5 minutes)</span>
         </p>
       </section>
 
-      <section className="space-y-3 rounded-lg border border-line p-5">
-        <h2 className="text-xl font-semibold">Or use a free model on your own computer</h2>
-        <p className="text-sm text-muted">
+      <section className="card space-y-2 bg-card p-6">
+        <h2 className="text-lg font-semibold tracking-tight">Or use a free model on your own computer</h2>
+        <p className="text-sm leading-relaxed text-muted">
           Don&apos;t want an API key? Install LM Studio or Ollama and Rolevisor runs on a model on
           your own computer instead. It&apos;s free, and your resume never leaves your machine.
           Results are less polished than Claude&apos;s, and you need a reasonably recent computer.
         </p>
-        <p className="text-sm">
-          <a className="text-accent underline" href={LOCAL_GUIDE} target="_blank" rel="noreferrer">
+        <p className="pt-1 text-sm">
+          <a className="link" href={LOCAL_GUIDE} target="_blank" rel="noreferrer">
             Local model setup guide
           </a>
         </p>
       </section>
 
-      <section className="space-y-4 pb-8">
-        <h2 className="text-xl font-semibold">Get started in three steps</h2>
-        <ol className="list-decimal space-y-2 pl-5 text-sm">
-          <li>
-            <Link href="/guide/api-key" className="text-accent underline">
-              Get a Claude API key
-            </Link>{" "}
-            or{" "}
-            <a className="text-accent underline" href={LOCAL_GUIDE} target="_blank" rel="noreferrer">
-              set up a local model
-            </a>
-            .
+      <section className="space-y-6 pb-4">
+        <SectionTitle title="Get started in three steps" />
+        <ol className="space-y-4 text-[15px] leading-relaxed">
+          <li className="flex gap-4">
+            <span className="step-dot">1</span>
+            <p className="pt-0.5">
+              <Link href="/guide/api-key" className="link">
+                Get a Claude API key
+              </Link>{" "}
+              or{" "}
+              <a className="link" href={LOCAL_GUIDE} target="_blank" rel="noreferrer">
+                set up a local model
+              </a>
+              .
+            </p>
           </li>
-          <li>
-            Add it in{" "}
-            <Link href="/settings" className="text-accent underline">
-              Model settings
-            </Link>{" "}
-            and click Test connection.
+          <li className="flex gap-4">
+            <span className="step-dot">2</span>
+            <p className="pt-0.5">
+              Add it in{" "}
+              <Link href="/settings" className="link">
+                Model settings
+              </Link>{" "}
+              and click Test connection.
+            </p>
           </li>
-          <li>
-            Open{" "}
-            <Link href="/tailor" className="text-accent underline">
-              Tailor
-            </Link>
-            , add your resume and a job posting, and click Tailor my resume.
+          <li className="flex gap-4">
+            <span className="step-dot">3</span>
+            <p className="pt-0.5">
+              Open{" "}
+              <Link href="/tailor" className="link">
+                Tailor
+              </Link>
+              , add your resume and a job posting, and click Tailor my resume.
+            </p>
           </li>
         </ol>
-        <Link href="/tailor" className="btn inline-block px-5 py-2.5 text-base">
+        <Link href="/tailor" className="btn px-5 py-2.5 text-base">
           Start tailoring
         </Link>
       </section>
