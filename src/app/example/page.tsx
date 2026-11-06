@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { DownloadPanel } from "@/components/DownloadPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { Tabs } from "@/components/Tabs";
+import { KeywordMatchCard } from "@/components/KeywordMatchCard";
 import { FormatChecks, FormatReviewView } from "@/components/FormatCard";
 import { SuggestionsList } from "@/components/SuggestionsCard";
 import { TailorResults } from "@/components/TailorResults";
@@ -21,6 +22,7 @@ import { EDUCATION_STATUSES } from "@/lib/tailor";
 
 const TABS = [
   { id: "tailor", label: "Tailored resume" },
+  { id: "keywords", label: "Keyword match" },
   { id: "suggestions", label: "Suggestions" },
   { id: "format", label: "Formatting" },
   { id: "letter", label: "Cover letter" },
@@ -101,6 +103,14 @@ export default function Example() {
 
         <div role="tabpanel" id="panel-tailor" aria-labelledby="tab-tailor" hidden={tab !== "tailor"}>
           <TailorResults result={EXAMPLE_TAILORED} originalResume={EXAMPLE_INPUTS.resume} />
+        </div>
+
+        <div role="tabpanel" id="panel-keywords" aria-labelledby="tab-keywords" hidden={tab !== "keywords"}>
+          <KeywordMatchCard
+            resume={EXAMPLE_INPUTS.resume}
+            jobPosting={EXAMPLE_INPUTS.jobPosting}
+            background={EXAMPLE_INPUTS.background}
+          />
         </div>
 
         <div role="tabpanel" id="panel-suggestions" aria-labelledby="tab-suggestions" hidden={tab !== "suggestions"}>

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
 import { Loading } from "@/components/Loading";
+import { KeywordMatchCard } from "@/components/KeywordMatchCard";
 import { JobPostingInput } from "@/components/JobPostingInput";
 import { PageHeader } from "@/components/PageHeader";
 import { SuggestionsCard } from "@/components/SuggestionsCard";
@@ -50,6 +51,7 @@ const EMPTY: Inputs = {
 
 const TABS = [
   { id: "tailor", label: "Tailored resume" },
+  { id: "keywords", label: "Keyword match" },
   { id: "suggestions", label: "Suggestions" },
   { id: "format", label: "Formatting" },
   { id: "letter", label: "Cover letter" },
@@ -439,6 +441,26 @@ export default function TailorPage() {
               {tailoring
                 ? "Your tailored resume will appear here in a moment."
                 : 'Add your resume and a job posting above, then press "Tailor my resume" to see it here.'}
+            </Empty>
+          )}
+        </div>
+
+        <div
+          role="tabpanel"
+          id="panel-keywords"
+          aria-labelledby="tab-keywords"
+          hidden={tab !== "keywords"}
+        >
+          {ready ? (
+            <KeywordMatchCard
+              resume={inputs.resume}
+              jobPosting={inputs.jobPosting}
+              background={inputs.background}
+            />
+          ) : (
+            <Empty>
+              Add your resume and a job posting above to see which of the posting&apos;s keywords
+              your resume has. No API key needed.
             </Empty>
           )}
         </div>

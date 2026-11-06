@@ -208,11 +208,5 @@ export const tailorTask: Task<TailorRequest, TailorResult> = {
   clean: (result) => cleanAnswer(result, { keep: ["keywords"], resume: ["tailoredResume"] }),
 };
 
-/** Whether a keyword appears as a whole word or phrase, ignoring case and extra spacing. */
-export function hasKeyword(text: string, keyword: string): boolean {
-  const words = keyword.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return false;
-  const phrase = words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+");
-  // Lookarounds instead of \b so terms like "C++" and ".NET" still match.
-  return new RegExp(`(?<![\\p{L}\\p{N}])${phrase}(?![\\p{L}\\p{N}])`, "iu").test(text);
-}
+// The keyword check lives with the rest of the keyword matching; kept here for existing imports.
+export { hasKeyword } from "./keywordMatch";
