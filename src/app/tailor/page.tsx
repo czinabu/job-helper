@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
+import { OriginalDownloadCard } from "@/components/OriginalDownloadCard";
 import { Loading } from "@/components/Loading";
 import { JobPostingInput } from "@/components/JobPostingInput";
 import { PageHeader } from "@/components/PageHeader";
@@ -471,14 +472,18 @@ export default function TailorPage() {
           hidden={tab !== "format"}
         >
           {inputs.resume.trim() ? (
-            <FormatCard
-              resume={inputs.resume}
-              layout={layout}
-              settings={settings}
-            />
+            <div className="space-y-6">
+              <FormatCard
+                resume={inputs.resume}
+                layout={layout}
+                settings={settings}
+              />
+              <OriginalDownloadCard resume={inputs.resume} />
+            </div>
           ) : (
             <Empty>
-              Add your resume above to check its formatting and spacing.
+              Add your resume above to check its formatting and spacing, or
+              to download it in a clean template.
             </Empty>
           )}
         </div>
