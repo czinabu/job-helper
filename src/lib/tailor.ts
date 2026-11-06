@@ -42,6 +42,9 @@ export const TailorRequestSchema = z.object({
 });
 export type TailorRequest = z.infer<typeof TailorRequestSchema>;
 
+export const LINK_ADVICE = ["Recommended", "Optional", "Not needed"] as const;
+export type LinkAdvice = (typeof LINK_ADVICE)[number];
+
 export const TailorResultSchema = z.object({
   // No .int() or min/max: Claude's structured outputs don't support number limits.
   matchScore: z
@@ -103,6 +106,21 @@ export const TailorResultSchema = z.object({
         ),
     })
     .describe("Tailored advice on whether and how to show the person's education."),
+  linkAdvice: z
+    .object({
+      linkedin: z
+        .enum(LINK_ADVICE)
+        .describe("Whether a LinkedIn profile link would help the resume for this job."),
+      github: z
+        .enum(LINK_ADVICE)
+        .describe("Whether a GitHub profile link would help the resume for this job."),
+      reason: z
+        .string()
+        .describe(
+          "Why, in one plain-English sentence the person will read next to a box asking for the link.",
+        ),
+    })
+    .describe("Whether the resume's contact line should carry LinkedIn and GitHub links for this job."),
 });
 export type TailorResult = z.infer<typeof TailorResultSchema>;
 
@@ -125,7 +143,12 @@ Education advice: decide whether and how the person should show their education 
 - For people early in their career, career changers into a field they studied, or students, education and relevant coursework can go near the top.
 - Suggest relevant coursework only when it matches the job's requirements and the person lacks work experience that already proves those skills. Pick only courses the person gave you or that are on their resume.
 - For people still in school, list the expected graduation date, for example "B.S. Nursing, expected May 2027".
-- If the person gave no education details and the resume has none, recommend leaving it off unless the job requires it, and say what they could add.`;
+- If the person gave no education details and the resume has none, recommend leaving it off unless the job requires it, and say what they could add.
+
+Profile links: say whether LinkedIn and GitHub links would help for this job. LinkedIn is "Recommended" for most professional and office jobs, and "Optional" for hourly, trade, or in-person roles where recruiters rarely look. GitHub is "Recommended" for software, data, machine learning, DevOps, and other roles where hiring managers look at code, "Optional" for roles that only touch code (technical support, product, design, IT), and "Not needed" otherwise. Rolevisor asks the person for any link that's missing and adds it to the contact line itself, so in the tailored resume:
+- never write, guess, or shorten a profile URL; copy one only if it's in the original resume exactly,
+- keep the words "LinkedIn" or "GitHub" in the contact line if the original has them,
+- don't add those words when the original doesn't have them.`;
 
 function userPrompt({ resume, background, jobPosting }: TailorRequest): string {
   const about = [

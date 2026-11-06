@@ -118,3 +118,36 @@ export async function fillLinksFromFile(file: File, text: string) {
   for (const k of Object.keys(EMPTY_LINKS) as (keyof ProfileLinks)[]) if (!next[k] && found[k]) next[k] = found[k]!;
   if (JSON.stringify(next) !== JSON.stringify(current)) saveLinks(next);
 }
+
+export type LinkNeed = "mentioned" | "recommended";
+
+/** The lines above the first "## " heading (or the first few lines, if there's none): where contact links go. */
+function contactBlock(text: string): string {
+  const lines = text.replace(/\r\n?/g, "\n").split("\n");
+  const heading = lines.findIndex((l) => /^\s*#{1,6}\s/.test(l));
+  return (heading < 0 ? lines.slice(0, 6) : lines.slice(0, heading)).join("\n");
+}
+
+/**
+ * Which of LinkedIn and GitHub to ask the person for. A link is needed when the contact line names it with no
+ * address behind it ("mentioned"), or when it isn't there at all but would help for this job ("recommended").
+ * Nothing is needed once the person has saved the address or the resume already has it written out.
+ */
+export function linksToAskFor(
+  resume: string,
+  links: ProfileLinks,
+  advice?: { linkedin: string; github: string },
+): Partial<Record<"linkedin" | "github", LinkNeed>> {
+  const contact = contactBlock(resume);
+  const out: Partial<Record<"linkedin" | "github", LinkNeed>> = {};
+  const checks = [
+    { key: "linkedin", host: /linkedin\.com\//i, word: /(^|[^\w/.])LinkedIn(?!\w)/i },
+    { key: "github", host: /github\.com\//i, word: /(^|[^\w/.])GitHub(?!\w)/i },
+  ] as const;
+  for (const c of checks) {
+    if (normalizeUrl(links[c.key]) || c.host.test(contact)) continue;
+    if (c.word.test(contact)) out[c.key] = "mentioned";
+    else if (advice?.[c.key] === "Recommended") out[c.key] = "recommended";
+  }
+  return out;
+}
