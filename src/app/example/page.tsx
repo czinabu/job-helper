@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { BulletChecks } from "@/components/BulletCheckCard";
 import { DownloadPanel } from "@/components/DownloadPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { Tabs } from "@/components/Tabs";
@@ -16,6 +17,7 @@ import {
   EXAMPLE_SUGGESTIONS,
   EXAMPLE_TAILORED,
 } from "@/lib/example";
+import { checkBullets } from "@/lib/bulletCheck";
 import { checkFormat } from "@/lib/formatCheck";
 import { EDUCATION_STATUSES } from "@/lib/tailor";
 
@@ -47,6 +49,7 @@ export default function Example() {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("tailor");
   // The measured checks are Rolevisor's real, free checks run on the sample.
   const report = useMemo(() => checkFormat(EXAMPLE_INPUTS.resume, EXAMPLE_LAYOUT), []);
+  const bullets = useMemo(() => checkBullets(EXAMPLE_INPUTS.resume, EXAMPLE_TAILORED.missingSkills), []);
   const { background } = EXAMPLE_INPUTS;
   const school = background.education?.[0];
 
@@ -125,6 +128,9 @@ export default function Example() {
               <h3 className="font-medium">Expert-style review</h3>
               <FormatReviewView review={EXAMPLE_FORMAT_REVIEW} />
             </div>
+          </section>
+          <section className="mt-4 space-y-4 card p-5">
+            <BulletChecks report={bullets} />
           </section>
         </div>
 

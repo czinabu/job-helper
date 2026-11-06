@@ -68,3 +68,4 @@ How it fits together:
 - `src/lib/claude.ts`: runs tasks on Claude **from the browser** (there are no server API routes). `src/lib/apiKey.ts` and `src/lib/useSettings.ts` keep the key out of the saved settings. Heavy tasks use the main model, light ones the quick model.
 - `src/lib/tailor.ts`: the `tailor` task (heavy, so it runs on the main model) and the keyword check. `src/components/TailorResults.tsx` shows the results.
 - `src/lib/parseResume.ts`: reads PDF and Word files in the browser.
+- `src/lib/bulletCheck.ts`: the free, rule-based bullet check (weak openers, no numbers, passive voice, length, repeated verbs). No model; `src/components/BulletCheckCard.tsx` shows it on the Formatting tab.

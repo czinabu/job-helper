@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { BulletCheckCard } from "@/components/BulletCheckCard";
 import { CoverLetterCard } from "@/components/CoverLetterCard";
 import { FormatCard } from "@/components/FormatCard";
 import { Loading } from "@/components/Loading";
@@ -471,11 +472,21 @@ export default function TailorPage() {
           hidden={tab !== "format"}
         >
           {inputs.resume.trim() ? (
-            <FormatCard
-              resume={inputs.resume}
-              layout={layout}
-              settings={settings}
-            />
+            <div className="space-y-4">
+              <FormatCard
+                resume={inputs.resume}
+                layout={layout}
+                settings={settings}
+              />
+              <BulletCheckCard
+                resume={inputs.resume}
+                missingKeywords={
+                  tailored?.resume === inputs.resume
+                    ? tailored.result.missingSkills
+                    : undefined
+                }
+              />
+            </div>
           ) : (
             <Empty>
               Add your resume above to check its formatting and spacing.
