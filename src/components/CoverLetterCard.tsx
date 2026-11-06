@@ -12,7 +12,8 @@ import {
   type Tone,
 } from "@/lib/coverLetter";
 import { friendlyMessage } from "@/lib/errors";
-import type { ModelSettings } from "@/lib/providers";
+import { NoModel } from "@/components/FreeLabel";
+import { needsModel, type ModelSettings } from "@/lib/providers";
 import type { Background } from "@/lib/tailor";
 
 /** Writes a cover letter for the job from the resume and About you details. */
@@ -111,12 +112,16 @@ export function CoverLetterCard({
         onChange={(e) => setInstructions(e.target.value)}
       />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <button className="btn" disabled={!ready || busy} onClick={write}>
-          {busy ? "Writing..." : letter ? "Regenerate" : "Write my cover letter"}
-        </button>
-        {!ready && <span className="text-xs text-muted">Add your resume and a job posting first.</span>}
-      </div>
+      {needsModel(settings) ? (
+        <NoModel feature="Writing a cover letter" compact />
+      ) : (
+        <div className="flex flex-wrap items-center gap-3">
+          <button className="btn" disabled={!ready || busy} onClick={write}>
+            {busy ? "Writing..." : letter ? "Regenerate" : "Write my cover letter"}
+          </button>
+          {!ready && <span className="text-xs text-muted">Add your resume and a job posting first.</span>}
+        </div>
+      )}
 
       {busy && <Loading message="Writing your cover letter..." hint="This usually takes under a minute." />}
 

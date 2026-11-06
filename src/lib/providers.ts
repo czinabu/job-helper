@@ -112,3 +112,30 @@ export interface TestConnectionResult {
 
 /** localStorage key for the user's model settings. */
 export const SETTINGS_KEY = "job-helper:settings";
+
+/**
+ * Whether the AI features are out of reach: Claude is picked but no API key
+ * has been added. Local models need no key, so they count as set up (a wrong
+ * server address still shows its own error when a task runs). Every card that
+ * calls a model checks this the same way, so the free parts keep working and
+ * the AI parts say what to set up instead of failing.
+ */
+export function needsModel(settings: ModelSettings): boolean {
+  return !PROVIDERS[settings.provider].isLocal && !settings.apiKey.trim();
+}
+
+/** What works with no API key and no local model. Shown on Settings and Tailor. */
+export const FREE_FEATURES = [
+  "Reading resumes from PDF, Word, or text, and job postings from screenshots",
+  "The formatting and spacing score on the Tailor page",
+  "The application log, with CSV and JSON import and export",
+  "The example results page",
+];
+
+/** What needs a Claude API key or a local model. */
+export const MODEL_FEATURES = [
+  "The tailored resume, match score, and keyword check",
+  "Suggestions and the expert-style formatting review",
+  "Cover letters",
+  "Role finder",
+];

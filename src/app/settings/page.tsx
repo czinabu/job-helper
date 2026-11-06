@@ -1,11 +1,14 @@
 "use client";
 
 import { PageHeader } from "@/components/PageHeader";
+import { FreeBadge, KeyBadge } from "@/components/FreeLabel";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   BUDGET_COST_ESTIMATE,
   BUDGET_MODEL,
+  FREE_FEATURES,
+  MODEL_FEATURES,
   PROVIDERS,
   defaultSettings,
   type ProviderId,
@@ -64,6 +67,26 @@ export default function SettingsPage() {
           Choose which AI model reads your resume. Your settings are saved only in this browser. Nothing you enter here is sent to Rolevisor&apos;s server.
         </p>
       </PageHeader>
+
+      <section className="card grid gap-5 p-4 text-sm sm:grid-cols-2">
+        <h2 className="font-medium sm:col-span-2">What works without a key</h2>
+        <div className="space-y-2">
+          <FreeBadge />
+          <ul className="list-disc space-y-1 pl-5 text-muted">
+            {FREE_FEATURES.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-2">
+          <KeyBadge />
+          <ul className="list-disc space-y-1 pl-5 text-muted">
+            {MODEL_FEATURES.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       <fieldset className="space-y-3">
         <legend className="mb-2 text-sm font-medium">Where should the AI run?</legend>
