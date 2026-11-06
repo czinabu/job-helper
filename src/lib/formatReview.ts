@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Task } from "./tasks";
+import { WRITING_STYLE, cleanAnswer } from "./writingStyle";
 
 export const FormatRequestSchema = z.object({
   resume: z.string().trim().min(1, "Add your resume first."),
@@ -28,7 +29,9 @@ const SYSTEM = `You are an experienced recruiter and resume reviewer. You judge 
 
 Base your feedback on mainstream expert guidance: one page for most people and two at most; margins of 0.5 to 1 inch; a standard font (Arial, Calibri, Times New Roman) at 10 to 12 pt with slightly larger headings; single line spacing with clear space between sections; a single column with no tables, images, or header/footer text so applicant tracking systems read it correctly; standard section names; reverse-chronological order with the most relevant material first; short bullets that start with an action verb and show results; consistent dates, punctuation, and bullet style.
 
-You get the resume text and a list of measurements and automatic findings. Treat the measurements as facts and don't repeat them back. Add what they can't see by reading the text: section order, bullet length and wording, consistency of dates and punctuation, how easy it is to skim, and whether the strongest content comes first. Be specific and kind. If layout measurements are unavailable, say what you can't judge. Never invent content for the resume.`;
+You get the resume text and a list of measurements and automatic findings. Treat the measurements as facts and don't repeat them back. Add what they can't see by reading the text: section order, bullet length and wording, consistency of dates and punctuation, how easy it is to skim, and whether the strongest content comes first. Be specific and kind. If layout measurements are unavailable, say what you can't judge. Never invent content for the resume.
+
+${WRITING_STYLE}`;
 
 export const formatTask: Task<FormatRequest, FormatReview> = {
   weight: "light",
@@ -44,4 +47,5 @@ ${layout}
 Review the formatting and organization of this resume.`,
   input: FormatRequestSchema,
   output: FormatReviewSchema,
+  clean: (result) => cleanAnswer(result),
 };

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { BackgroundSchema, EDUCATION_STATUSES } from "./tailor";
 import type { Task } from "./tasks";
+import { WRITING_STYLE, cleanAnswer } from "./writingStyle";
 
 export const RecommendRequestSchema = z.object({
   resume: z.string().trim().min(1, "Add your resume on the home page first."),
@@ -37,7 +38,9 @@ export type RecommendResult = z.infer<typeof RecommendResultSchema>;
 
 const SYSTEM = `You are an experienced career coach. From a person's resume and background, you suggest job titles and career directions that suit them.
 
-You have no access to live job listings, so recommend role types, not specific openings, and never invent companies or postings. Be honest about fit: base every reason on what the resume and background actually show, and mark roles that need new skills as "Stretch". Consider the person's stated target role, but also surface adjacent roles they may not have thought of. Use real, searchable job titles. Take their education into account, including unfinished degrees, without overstating it. Keep the tone encouraging and specific.`;
+You have no access to live job listings, so recommend role types, not specific openings, and never invent companies or postings. Be honest about fit: base every reason on what the resume and background actually show, and mark roles that need new skills as "Stretch". Consider the person's stated target role, but also surface adjacent roles they may not have thought of. Use real, searchable job titles. Take their education into account, including unfinished degrees, without overstating it. Keep the tone encouraging and specific.
+
+${WRITING_STYLE}`;
 
 function userPrompt({ resume, background, location }: RecommendRequest): string {
   const about = [
@@ -77,6 +80,7 @@ export const recommendTask: Task<RecommendRequest, RecommendResult> = {
   user: userPrompt,
   input: RecommendRequestSchema,
   output: RecommendResultSchema,
+  clean: (result) => cleanAnswer(result, { keep: ["title", "searchTerms"] }),
 };
 
 /** Pre-filled searches on the big job boards. No API needed; they open in a new tab. */

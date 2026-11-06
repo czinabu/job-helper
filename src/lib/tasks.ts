@@ -20,6 +20,8 @@ export interface Task<Input, Output> {
   input: z.ZodType<Input>;
   /** The shape the model must reply in. */
   output: z.ZodType<Output>;
+  /** Tidies the answer after it arrives, e.g. with cleanAnswer() from writingStyle.ts. */
+  clean?: (output: Output) => Output;
 }
 
 export function defineTask<Input, Output>(task: Task<Input, Output>) {

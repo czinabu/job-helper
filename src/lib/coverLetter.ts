@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { BackgroundSchema, EDUCATION_STATUSES } from "./tailor";
 import type { Task } from "./tasks";
+import { WRITING_STYLE, cleanAnswer } from "./writingStyle";
 
 export const TONES = {
   professional: "Professional",
@@ -52,14 +53,18 @@ Honesty comes first. Use only facts from the person's resume, background, and ed
 
 Follow mainstream expert guidance:
 - One page, three to four short paragraphs, plain text, no headers or bullet lists.
-- Open with a specific hook tied to this role and company, not "I am writing to apply for...".
+- Open with a specific hook tied to this role and company, such as something the person did that matches what the job is for. Never open with "I am writing to apply for...", "I am excited to...", or a line about the person's passion.
 - In the middle, pick the two or three most relevant things from the person's background and tie each to a need in the posting, showing results where the materials give them. Don't just restate the resume.
 - Echo the posting's own wording where it truthfully describes the person.
 - Show you understand what the employer cares about, then close with confidence and a clear next step.
-- Avoid clichés ("team player", "passionate", "perfect fit"), filler, and apologizing for gaps.
+- Avoid clichés, filler, flattery of the company, and apologizing for gaps.
+- An "enthusiastic" tone comes from specific reasons this job appeals to the person, not from words like "thrilled" or "excited".
+- Close plainly, for example by saying you'd welcome a conversation about the role. Sign off with "Sincerely," or "Best regards," and the person's name.
 - Education: mention it only if it helps for this job (a required degree, a recent graduate, or a career changer), and be accurate about whether it's finished.
 
-Match the requested tone and aim for the requested length. If the person gave extra instructions, follow them as long as they stay truthful. If earlier versions are given, write a clearly different take with a fresh opening.`;
+Match the requested tone and aim for the requested length. If the person gave extra instructions, follow them as long as they stay truthful. If earlier versions are given, write a clearly different take with a fresh opening.
+
+${WRITING_STYLE}`;
 
 export function aboutText(background: z.infer<typeof BackgroundSchema>): string {
   const about = [
@@ -107,4 +112,5 @@ ${instructions?.trim() ? `\n<extra_instructions>\n${instructions.trim()}\n</extr
 Write a cover letter for this job. Tone: ${TONES[tone]}. Length: about ${LENGTH_WORDS[length]} words.`,
   input: CoverLetterRequestSchema,
   output: CoverLetterResultSchema,
+  clean: (result) => cleanAnswer(result),
 };

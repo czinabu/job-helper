@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Task } from "./tasks";
+import { WRITING_STYLE, cleanAnswer } from "./writingStyle";
 
 export const EDUCATION_STATUSES = {
   completed: "Finished",
@@ -148,7 +149,11 @@ Education advice: decide whether and how the person should show their education 
 Profile links: say whether LinkedIn and GitHub links would help for this job. LinkedIn is "Recommended" for most professional and office jobs, and "Optional" for hourly, trade, or in-person roles where recruiters rarely look. GitHub is "Recommended" for software, data, machine learning, DevOps, and other roles where hiring managers look at code, "Optional" for roles that only touch code (technical support, product, design, IT), and "Not needed" otherwise. Rolevisor asks the person for any link that's missing and adds it to the contact line itself, so in the tailored resume:
 - never write, guess, or shorten a profile URL; copy one only if it's in the original resume exactly,
 - keep the words "LinkedIn" or "GitHub" in the contact line if the original has them,
-- don't add those words when the original doesn't have them.`;
+- don't add those words when the original doesn't have them.
+
+The tailored resume follows the writing style below too: start bullets with plain, specific action verbs (led, built, cut, trained, ran) instead of buzzwords, and keep the summary to concrete facts about the person rather than adjectives like "dynamic" or "results-driven". Keep the original resume's own wording where it's already good. For dates, use the same style as the original resume.
+
+${WRITING_STYLE}`;
 
 function userPrompt({ resume, background, jobPosting }: TailorRequest): string {
   const about = [
@@ -199,6 +204,8 @@ export const tailorTask: Task<TailorRequest, TailorResult> = {
   user: userPrompt,
   input: TailorRequestSchema,
   output: TailorResultSchema,
+  // Keywords are copied from the posting and must match it exactly.
+  clean: (result) => cleanAnswer(result, { keep: ["keywords"], resume: ["tailoredResume"] }),
 };
 
 /** Whether a keyword appears as a whole word or phrase, ignoring case and extra spacing. */
