@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { backgroundText } from "@/components/KeywordMatchCard";
 import { checkBullets, type BulletIssueId, type BulletReport } from "@/lib/bulletCheck";
+import { missingKeywords } from "@/lib/keywordMatch";
+import type { Background } from "@/lib/tailor";
 
 const LABELS: Record<BulletIssueId, (n: number) => string> = {
   "weak-opener": (n) => `${n} ${n === 1 ? "starts" : "start"} weakly`,
@@ -13,13 +16,27 @@ const LABELS: Record<BulletIssueId, (n: number) => string> = {
 
 /** How many flagged bullets show before "Show all". */
 const PREVIEW = 6;
+/** Missing keywords to list as gaps, most important first. */
+const MAX_GAPS = 10;
 
 /**
  * Flags weak resume bullets with plain rules, no model needed. It points out
  * problems and suggests verbs but doesn't rewrite anything.
  */
-export function BulletCheckCard({ resume, missingKeywords }: { resume: string; missingKeywords?: string[] }) {
-  const report = useMemo(() => checkBullets(resume, missingKeywords), [resume, missingKeywords]);
+export function BulletCheckCard({
+  resume,
+  jobPosting = "",
+  background,
+}: {
+  resume: string;
+  /** When given, the posting's missing keywords show as gaps to address. */
+  jobPosting?: string;
+  background?: Background;
+}) {
+  const report = useMemo(() => {
+    const gaps = jobPosting.trim() ? missingKeywords(resume, jobPosting, backgroundText(background)) : [];
+    return checkBullets(resume, gaps.slice(0, MAX_GAPS));
+  }, [resume, jobPosting, background]);
   return (
     <section className="space-y-4 card p-5">
       <BulletChecks report={report} />
@@ -118,7 +135,7 @@ export function BulletChecks({ report }: { report: BulletReport }) {
         <div className="space-y-2 border-t border-line pt-4 text-sm">
           <h3 className="font-medium">Gaps to address</h3>
           <p className="text-muted">
-            The job posting asks for these, but your resume doesn&apos;t mention them. If you have
+            The job posting asks for these, but your resume doesn&apos;t mention them (most important first). If you have
             the experience, work it into a bullet.
           </p>
           <ul className="flex flex-wrap gap-2">

@@ -560,11 +560,8 @@ export default function TailorPage() {
               />
               <BulletCheckCard
                 resume={inputs.resume}
-                missingKeywords={
-                  tailored?.resume === inputs.resume
-                    ? tailored.result.missingSkills
-                    : undefined
-                }
+                jobPosting={inputs.jobPosting}
+                background={inputs.background}
               />
               <OriginalDownloadCard resume={inputs.resume} />
             </div>
