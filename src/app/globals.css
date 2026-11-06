@@ -52,6 +52,7 @@
   --color-good-soft: var(--good-soft);
   --color-bad: var(--bad);
   --color-bad-soft: var(--bad-soft);
+  --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -88,6 +89,12 @@ body {
     @apply text-accent underline decoration-accent/30 underline-offset-2 transition hover:decoration-accent;
   }
 
+
+  /* A highlighter mark under a word, for keywords in the landing page's resume preview. */
+  .mark {
+    @apply -mx-[2px] rounded-[2px] bg-accent-soft px-[2px] text-foreground;
+    box-decoration-break: clone;
+  }
 
   /* A step number in a circle, used on Tailor and the API key guide. */
   .step-dot {
