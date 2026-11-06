@@ -181,6 +181,12 @@ Columbus State Community College - Coursework toward A.A.S. Business Administrat
     reasoning:
       "The posting accepts equivalent experience instead of a bachelor's degree, so your work and certificate carry more weight than school. Listing the coursework honestly fills in your timeline and shows some statistics background without implying a finished degree.",
   },
+  linkAdvice: {
+    linkedin: "Recommended",
+    github: "Not needed",
+    reason:
+      "Recruiters for analyst roles usually check LinkedIn, and this job doesn't ask for code samples, so GitHub can stay off.",
+  },
 };
 
 export const EXAMPLE_SUGGESTIONS: SuggestionsResult = {
