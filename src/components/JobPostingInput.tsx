@@ -59,7 +59,13 @@ export function JobPostingInput({ text, onChange }: Props) {
         disabled={busy}
         onChange={(e) => onChange(e.target.value)}
         onPaste={(e) => {
-          const image = Array.from(e.clipboardData.files).find(isImage);
+          // Some browsers leave `files` empty for a pasted screenshot but still list it in `items`.
+          const image =
+            Array.from(e.clipboardData.files).find(isImage) ??
+            Array.from(e.clipboardData.items)
+              .filter((item) => item.kind === "file")
+              .map((item) => item.getAsFile())
+              .find((file): file is File => file !== null && isImage(file));
           if (image) {
             e.preventDefault();
             read(image);
