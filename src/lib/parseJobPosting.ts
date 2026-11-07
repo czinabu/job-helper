@@ -13,14 +13,20 @@ export function isImage(file: File): boolean {
 /**
  * Reads a screenshot with OCR in the browser, so it works with every provider
  * and the image never leaves this device. The OCR engine and English language
- * data are downloaded once on first use, then cached by the browser.
+ * data are served from this site (public/tesseract, copied there by
+ * scripts/copy-ocr-assets.mjs) because the Content-Security-Policy blocks the
+ * library's default CDN. They download once on first use, then are cached.
  */
 async function imageText(file: File, onProgress?: (percent: number) => void): Promise<string> {
   if (file.size > MAX_IMAGE_BYTES) {
     throw new FriendlyError("That image is over 10 MB. Try a smaller screenshot.");
   }
   const { createWorker } = await import("tesseract.js");
+  const base = `${window.location.origin}/tesseract`;
   const worker = await createWorker("eng", 1, {
+    workerPath: `${base}/worker.min.js`,
+    corePath: `${base}/core`,
+    langPath: `${base}/lang`,
     logger: (m) => {
       if (m.status === "recognizing text") onProgress?.(Math.round(m.progress * 100));
     },

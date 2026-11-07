@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
     // model servers, so a stray third-party script can't read or send the key.
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'" + (process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""),
+      // 'wasm-unsafe-eval' lets the screenshot reader (Tesseract, served from this site) run its WebAssembly engine.
+      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'" + (process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""),
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self' data:",
